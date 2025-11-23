@@ -141,6 +141,7 @@ jobs:
           echo "$missing files missing"
           exit 1
         fi
+      
     
     - name: Check for translations
       run: |
