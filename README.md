@@ -747,19 +747,19 @@ uvicorn src.api:app --reload
 
 ### **Support**
 - **Email**: support@panchmukhi.ai
-- **Phone**: +९१-९९२२३३४४५५
-- **WhatsApp**: +९१-९९२२३३४४५५
+- **Phone**: +९१-0000000000
+- **WhatsApp**: +९१-
 - **Live Chat**: वेबसाईटवर लाईव्ह चॅट
 
 ### **Sales**
 - **Email**: sales@panchmukhi.ai
-- **Phone**: +९१-९९२२३३४४५६
+- **Phone**: +९१-0000000000
 - **Demo**: demo@panchmukhi.ai
 
 ### **Address**
 **पंचमुखी ट्रेडिंग ब्रेन प्रो**  
 मुंबई, महाराष्ट्र, भारत  
-पिन: ४००००१
+पिन: 413249
 
 ---
 
