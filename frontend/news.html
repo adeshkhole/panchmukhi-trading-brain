@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Management - Panchmukhi Trading Brain Pro</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Marathi:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --secondary: #1A1A1A;
+            --accent: #FFFFFF;
+            --success: #22C55E;
+            --danger: #EF4444;
+            --warning: #F59E0B;
+            --info: #3B82F6;
+            --purple: #8B5CF6;
+            --pink: #EC4899;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--secondary);
+            color: var(--accent);
+            overflow-x: hidden;
+        }
+        
+        .marathi-text {
+            font-family: 'Noto Sans Marathi', sans-serif;
+        }
+        
+        .mono-text {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 107, 53, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(255, 107, 53, 0.2);
+        }
+        
+        .nav-blur {
+            background: rgba(26, 26, 26, 0.9);
+            backdrop-filter: blur(20px);
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: var(--danger);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .fade-in {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .news-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .news-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(255, 107, 53, 0.2);
+        }
+        
+        .priority-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .priority-high {
+            background: rgba(239, 68, 68, 0.2);
+            color: #FCA5A5;
+        }
+        
+        .priority-medium {
+            background: rgba(245, 158, 11, 0.2);
+            color: #FCD34D;
+        }
+        
+        .priority-low {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86EFAC;
+        }
+        
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        
+        .status-published {
+            background: rgba(34, 197, 94, 0.2);
+            color: #86EFAC;
+        }
+        
+        .status-draft {
+            background: rgba(107, 114, 128, 0.2);
+            color: #D1D5DB;
+        }
+        
+        .status-scheduled {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93C5FD;
+        }
+        
+        .nav-blur {
+            background: rgba(26, 26, 26, 0.9);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* Navigation link styles */
+        .nav-link {
+            display: inline-block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+        }
+
+        /* Glass card button tweaks */
+        .glass-card {
+            transition: all 0.2s ease;
+        }
+
+        .glass-card:hover {
+            border-color: rgba(255, 107, 53, 0.4) !important;
+        }
+
+        /* Language selector styling */
+        .language-selector select {
+            cursor: pointer;
+        }
+
+        /* Header responsive adjustments */
+        @media (max-width: 1024px) {
+            .nav-link {
+                font-size: 0.8125rem;
+            }
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #EF4444;
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .news-grid {
+                grid-template-columns: 1fr !important;
+            }
+            
+            .filter-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-section select, .filter-section input {
+                width: 100% !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="site-header"></div>
+    <script src="include-header.js"></script>
+
+    <!-- Main Content -->
+    <div class="min-h-screen pt-24 pb-12 px-6">
+        <div class="max-w-7xl mx-auto">
+            <!-- Header -->
+            <div class="mb-12 fade-in">
+                <h1 class="text-5xl font-bold mb-4 gradient-text marathi-text">समाचार व्यवस्थापन</h1>
+                <p class="text-xl text-gray-400">सर्व क्षेत्रातील महत्वपूर्ण, मध्यम आणि कमी प्राधान्य समाचार</p>
+            </div>
+
+            <!-- Filters -->
+            <div class="glass-card p-6 mb-8 fade-in filter-section">
+                <div class="grid md:grid-cols-5 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Search</label>
+                        <input type="text" id="searchNews" placeholder="Search news..." class="glass-card w-full px-4 py-2 rounded-lg">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Sector</label>
+                        <select id="filterSector" class="glass-card w-full px-4 py-2 rounded-lg">
+                            <option value="">All Sectors</option>
+                            <option value="Energy">Energy</option>
+                            <option value="IT">IT</option>
+                            <option value="Banking">Banking</option>
+                            <option value="Pharma">Pharma</option>
+                            <option value="Auto">Auto</option>
+                            <option value="Real Estate">Real Estate</option>
+                            <option value="Consumer">Consumer</option>
+                            <option value="Telecom">Telecom</option>
+                            <option value="Infra">Infra</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Priority</label>
+                        <select id="filterPriority" class="glass-card w-full px-4 py-2 rounded-lg">
+                            <option value="">All Priority</option>
+                            <option value="High">High Priority</option>
+                            <option value="Medium">Medium Priority</option>
+                            <option value="Low">Low Priority</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Status</label>
+                        <select id="filterStatus" class="glass-card w-full px-4 py-2 rounded-lg">
+                            <option value="">All Status</option>
+                            <option value="published">Published</option>
+                            <option value="draft">Draft</option>
+                            <option value="scheduled">Scheduled</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium mb-2">Language</label>
+                        <select id="filterLanguage" class="glass-card w-full px-4 py-2 rounded-lg">
+                            <option value="">All Languages</option>
+                            <option value="mr">मराठी</option>
+                            <option value="hi">हिन्दी</option>
+                            <option value="en">English</option>
+                            <option value="gu">ગુજરાતી</option>
+                            <option value="kn">ಕನ್ನಡ</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats -->
+            <div class="grid md:grid-cols-4 gap-4 mb-8 fade-in">
+                <div class="glass-card p-4 text-center">
+                    <div class="text-3xl font-bold text-orange-500 mb-1" id="statTotal">0</div>
+                    <div class="text-gray-400">Total News</div>
+                </div>
+                <div class="glass-card p-4 text-center">
+                    <div class="text-3xl font-bold text-red-500 mb-1" id="statHigh">0</div>
+                    <div class="text-gray-400">High Priority</div>
+                </div>
+                <div class="glass-card p-4 text-center">
+                    <div class="text-3xl font-bold text-yellow-500 mb-1" id="statMedium">0</div>
+                    <div class="text-gray-400">Medium Priority</div>
+                </div>
+                <div class="glass-card p-4 text-center">
+                    <div class="text-3xl font-bold text-green-500 mb-1" id="statLow">0</div>
+                    <div class="text-gray-400">Low Priority</div>
+                </div>
+            </div>
+
+            <!-- News Grid by Priority -->
+            <div id="newsByPriority">
+                <!-- Will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- News Detail Modal -->
+    <div id="newsDetailModal" class="hidden fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+        <div class="bg-gray-900 rounded-lg p-8 max-w-2xl w-full mx-4 max-h-screen overflow-y-auto">
+            <div class="flex justify-between items-start mb-4">
+                <div>
+                    <h2 id="modalNewsTitle" class="text-2xl font-bold mb-2"></h2>
+                    <div class="flex items-center space-x-2 mb-2">
+                        <span id="modalNewsSector" class="glass-card px-3 py-1 rounded text-sm"></span>
+                        <span id="modalNewsPriority" class="priority-badge"></span>
+                        <span id="modalNewsStatus" class="status-badge"></span>
+                    </div>
+                </div>
+                <button id="closeDetailModal" class="text-gray-400 hover:text-white text-2xl">×</button>
+            </div>
+            <div class="space-y-4">
+                <div>
+                    <h3 class="text-sm font-medium text-gray-400 mb-1">Language</h3>
+                    <p id="modalNewsLanguage" class="text-lg"></p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-400 mb-1">Content</h3>
+                    <p id="modalNewsContent" class="text-base leading-relaxed"></p>
+                </div>
+                <div>
+                    <h3 class="text-sm font-medium text-gray-400 mb-1">Publication Date</h3>
+                    <p id="modalNewsDate" class="text-base mono-text"></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="news.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>

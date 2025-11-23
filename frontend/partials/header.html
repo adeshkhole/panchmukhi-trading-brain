@@ -1,0 +1,48 @@
+<nav class="nav-blur fixed top-0 left-0 right-0 z-50 px-6 py-3">
+    <div class="max-w-full mx-auto flex items-center justify-between gap-8">
+        <!-- Logo/Brand (Left) -->
+        <div class="flex items-center space-x-3 flex-shrink-0 min-w-fit">
+            <a href="index.html" class="flex items-center space-x-3">
+                <img src="resources/logo.svg" alt="पं" class="w-9 h-9 rounded-lg object-cover" />
+                <div class="hidden sm:block">
+                    <h1 class="text-sm font-bold marathi-text leading-tight whitespace-nowrap" data-lang-key="brand">Five Way Trading</h1>
+                    <p class="text-xs text-gray-500" data-lang-key="brand-desc">AI Trading</p>
+                </div>
+            </a>
+        </div>
+
+        <!-- Center Navigation Links -->
+        <div class="hidden md:flex items-center justify-center gap-0 flex-1">
+            <a href="index.html" class="nav-link px-3 py-2 text-sm hover:text-orange-400 transition-colors whitespace-nowrap" data-lang-key="dashboard">Dashboard</a>
+            <a href="sectors.html" class="nav-link px-3 py-2 text-sm hover:text-orange-400 transition-colors whitespace-nowrap" data-lang-key="sectors">Sectors</a>
+            <a href="ipo.html" class="nav-link px-3 py-2 text-sm hover:text-orange-400 transition-colors whitespace-nowrap" data-lang-key="ipo">IPO</a>
+            <a href="news.html" class="nav-link px-3 py-2 text-sm hover:text-orange-400 transition-colors whitespace-nowrap" data-lang-key="news-mgmt">News</a>
+            <a href="admin.html" class="nav-link px-3 py-2 text-sm hover:text-orange-400 transition-colors whitespace-nowrap" data-lang-key="admin">Admin</a>
+            <div class="relative">
+                <button class="nav-link px-3 py-2 text-sm hover:text-orange-400 transition-colors whitespace-nowrap" data-lang-key="alerts">Alerts</button>
+                <span class="notification-badge">3</span>
+            </div>
+        </div>
+
+        <!-- Right Controls (Buttons) -->
+        <div class="flex items-center gap-1.5 nav-controls flex-shrink-0 min-w-fit">
+            <button id="voiceToggle" class="glass-card px-2.5 py-1.5 text-xs rounded-lg hover:bg-orange-500/20 transition-colors flex items-center justify-center gap-1 whitespace-nowrap h-9">
+                <img src="resources/voice-alert.svg" alt="voice" class="w-4 h-4"/> <span class="hidden sm:inline text-xs font-medium" data-lang-key="voice">Voice</span>
+            </button>
+            <button id="themeToggle" class="glass-card px-2.5 py-1.5 text-xs rounded-lg hover:bg-orange-500/20 transition-colors flex items-center justify-center gap-1 whitespace-nowrap h-9">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                <span class="hidden sm:inline text-xs font-medium" data-lang-key="theme">Theme</span>
+            </button>
+
+            <div class="language-selector">
+                <select id="languageSelect" class="glass-card px-2.5 py-1.5 text-xs rounded-lg bg-opacity-50 hover:bg-opacity-75 transition-colors h-9 cursor-pointer font-medium">
+                    <option value="mr">मराठी</option>
+                    <option value="hi">हिन्दी</option>
+                    <option value="en">ENG</option>
+                    <option value="gu">GU</option>
+                    <option value="kn">KN</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</nav>
