@@ -138,9 +138,7 @@
             color: #FFFFFF;
             background: rgba(255,255,255,0.04);
         }
-        /* Header control sizing for consistent look */
-        .nav-controls .glass-card { display:flex; align-items:center; min-height:40px; padding-left:12px; padding-right:12px; font-size:0.95rem; }
-        .language-selector select { min-height:40px; }
+        /* Header control sizing removed to match index.html */
         
         .gradient-text {
             background: linear-gradient(135deg, var(--primary), var(--warning));
@@ -210,54 +208,7 @@
     <div id="site-header"></div>
     <script src="include-header.js"></script>
     <!-- Navigation (will be replaced by shared header) -->
-    <nav class="nav-blur fixed top-0 left-0 right-0 z-50 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <a href="index.html" class="flex items-center space-x-4">
-                    <img src="resources/logo.svg" alt="पं" class="w-10 h-10 rounded-lg object-cover" />
-                    <div>
-                        <h1 class="text-xl font-bold marathi-text">Panchmukhi Trading Brain Pro</h1>
-                        <p class="text-sm text-gray-400">Sector Analysis and Comparison</p>
-                    </div>
-                </a>
-            </div>
-            
-            <div class="hidden md:flex items-center space-x-6">
-                <a href="index.html" class="nav-link hover:text-orange-400 transition-colors" data-lang-key="dashboard">Dashboard</a>
-                <a href="sectors.html" class="nav-link text-orange-400" data-lang-key="sectors">Sector Analysis</a>
-                <a href="ipo.html" class="nav-link hover:text-orange-400 transition-colors" data-lang-key="ipo">IPO Analysis</a>
-                <a href="admin.html" class="nav-link hover:text-orange-400 transition-colors" data-lang-key="admin">Admin Panel</a>
-            </div>
-            
-            <div class="flex items-center space-x-4 nav-controls">
-                <select id="timeframeSelect" class="glass-card px-3 py-2 rounded-lg text-sm">
-                    <option value="1D">1 Day</option>
-                    <option value="1W">1 Week</option>
-                    <option value="1M" selected>1 Month</option>
-                    <option value="3M">3 Months</option>
-                    <option value="1Y">1 Year</option>
-                </select>
-
-                <button id="voiceToggle" class="glass-card px-4 py-2 rounded-lg hover:bg-orange-500/20 transition-colors flex items-center">
-                    <img src="resources/voice-alert.svg" alt="voice" class="w-5 h-5 mr-2"/> <span data-lang-key="voice">Voice Alerts</span>
-                </button>
-                <button id="themeToggle" class="glass-card px-4 py-2 rounded-lg hover:bg-orange-500/20 transition-colors flex items-center">
-                    <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    <span data-lang-key="theme">Theme</span>
-                </button>
-
-                <div class="language-selector">
-                    <select id="languageSelect" class="glass-card px-3 py-2 text-sm rounded-lg">
-                        <option value="mr">Marathi</option>
-                        <option value="hi">Hindi</option>
-                        <option value="en">English</option>
-                        <option value="gu">Gujarati</option>
-                        <option value="kn">Kannada</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <!-- Navigation is handled by include-header.js -->
 
     <!-- Hero Section -->
     <section class="pt-24 pb-12 px-6">
@@ -309,30 +260,34 @@
         <div class="max-w-7xl mx-auto">
             <div class="glass-card p-8 mb-12 fade-in">
                 <h2 class="text-3xl font-bold mb-6 marathi-text text-center">
-                    Sector Heatmap
+                    Sector Performance Heatmap
                 </h2>
                 <div id="sectorHeatmap" class="w-full h-96 mb-6"></div>
-                <div class="flex items-center justify-center space-x-8 text-sm">
-                    <div class="flex items-center space-x-2">
-                        <div class="w-4 h-4 bg-red-500 rounded"></div>
-                        <span>+5% Increase</span>
+            </div>
+
+            <!-- Top Gainers & Losers -->
+            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                <div class="glass-card p-6">
+                    <h3 class="text-xl font-bold mb-4 text-green-400">🚀 Top Gainers</h3>
+                    <div class="top-gainers space-y-2">
+                        <!-- Populated by JS -->
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-4 h-4 bg-green-500 rounded"></div>
-                        <span>2-5% Increase</span>
+                </div>
+                <div class="glass-card p-6">
+                    <h3 class="text-xl font-bold mb-4 text-red-400">📉 Top Losers</h3>
+                    <div class="top-losers space-y-2">
+                        <!-- Populated by JS -->
                     </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-4 h-4 bg-gray-500 rounded"></div>
-                        <span>±2% Neutral</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-4 h-4 bg-red-400 rounded"></div>
-                        <span>2-5% Decrease</span>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="w-4 h-4 bg-red-600 rounded"></div>
-                        <span>+5% Decrease</span>
-                    </div>
+                </div>
+            </div>
+
+            <!-- Sector Rotation & Market Cap -->
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="glass-card p-6">
+                    <div id="rotationChart" class="w-full h-80"></div>
+                </div>
+                <div class="glass-card p-6">
+                    <div id="marketCapChart" class="w-full h-80"></div>
                 </div>
             </div>
         </div>
@@ -648,21 +603,13 @@
                     <div>
                         <label class="block text-sm font-medium mb-2">First Stock</label>
                         <select id="stock1Select" class="glass-card w-full px-4 py-3 rounded-lg">
-                            <option value="RELIANCE">Reliance - RELIANCE</option>
-                            <option value="TCS">TCS - TCS</option>
-                            <option value="HDFC">HDFC Bank - HDFC</option>
-                            <option value="INFY">Infosys - INFY</option>
-                            <option value="ICICI">ICICI Bank - ICICI</option>
+                            <option value="">Select Stock</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-sm font-medium mb-2">Second Stock</label>
                         <select id="stock2Select" class="glass-card w-full px-4 py-3 rounded-lg">
-                            <option value="TCS">TCS - TCS</option>
-                            <option value="RELIANCE">Reliance - RELIANCE</option>
-                            <option value="HDFC">HDFC Bank - HDFC</option>
-                            <option value="INFY">Infosys - INFY</option>
-                            <option value="ICICI">ICICI Bank - ICICI</option>
+                            <option value="">Select Stock</option>
                         </select>
                     </div>
                     <div class="flex items-end">
@@ -673,7 +620,7 @@
                 </div>
                 
                 <div id="comparisonResult" class="hidden">
-                    <div class="grid md:grid-cols-2 gap-8">
+                    <div class="grid md:grid-cols-2 gap-8 mb-8">
                         <div class="space-y-4">
                             <h3 class="text-xl font-bold" id="stock1Name">Stock 1</h3>
                             <div class="space-y-2">
@@ -735,9 +682,27 @@
                         </div>
                     </div>
                     
+                    <div class="mt-8 mb-8">
+                        <h3 class="text-xl font-bold mb-4">Price Comparison Chart</h3>
+                        <div id="comparisonChart" class="w-full h-80"></div>
+                    </div>
+
                     <div class="mt-8">
-                        <h3 class="text-xl font-bold mb-4">Comparative Analysis</h3>
-                        <div id="comparisonChart" class="w-full h-64"></div>
+                        <h3 class="text-xl font-bold mb-4">Fundamental Comparison</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-gray-700">
+                                        <th class="py-3 px-4">Metric</th>
+                                        <th class="py-3 px-4" id="tableStock1Name">Stock 1</th>
+                                        <th class="py-3 px-4" id="tableStock2Name">Stock 2</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="fundamentalTableBody">
+                                    <!-- Populated by JS -->
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -762,6 +727,56 @@
         </div>
     </footer>
 
+    <script>
+        /**
+         * Panchmukhi Trading Brain Pro - API Client
+         * Handles all REST API communication with the backend
+         */
+        const API_BASE_URL = 'http://localhost:8083/api';
+        console.log('ApiClient: Initializing inline...');
+
+        class ApiClient {
+            constructor() {
+                this.baseUrl = API_BASE_URL;
+                console.log('ApiClient: Constructor called');
+            }
+
+            async call(method, endpoint, data = null) {
+                const url = `${this.baseUrl}${endpoint}`;
+                const options = {
+                    method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                if (data) options.body = JSON.stringify(data);
+
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.message || `API call failed: ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.error(`API Error (${method} ${endpoint}):`, error);
+                    throw error;
+                }
+            }
+
+            async getMarketSymbols() { return this.call('GET', '/market/symbols'); }
+            async getMarketData(symbol) { return this.call('GET', `/market/data/${symbol}`); }
+            async getFusionScore(symbol) { return this.call('GET', `/market/fusion/${symbol}`); }
+            async getMarketHeatmap() { return this.call('GET', '/market/heatmap'); }
+            async getNews(params = {}) { return this.call('GET', `/news?${new URLSearchParams(params)}`); }
+            async getAlerts(params = {}) { return this.call('GET', `/alerts?${new URLSearchParams(params)}`); }
+            async createAlert(data) { return this.call('POST', '/alerts', data); }
+            async getIPOs(status = 'all') { return this.call('GET', `/ipo?status=${status}`); }
+            async getSectors() { return this.call('GET', '/sectors'); }
+            async getUser(id) { return this.call('GET', `/users/${id}`); }
+            async createUser(data) { return this.call('POST', '/users', data); }
+        }
+
+        window.apiClient = new ApiClient();
+    </script>
     <script src="main.js"></script>
     <script src="sectors.js"></script>
 </body>

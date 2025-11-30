@@ -22,8 +22,12 @@ const server = Fastify({
 });
 
 // Server configuration
-const PORT = process.env.PORT || 8081;
+const PORT = process.env.PORT || 8083;
 const HOST = process.env.HOST || '0.0.0.0';
+
+// Handle graceful shutdown to release port
+process.on('SIGTERM', () => process.exit(0));
+process.on('SIGINT', () => process.exit(0));
 
 // In-memory data storage (in production, use proper database)
 const appData = {
@@ -188,10 +192,10 @@ server.addHook('onResponse', async (request, reply) => {
 // Error handling
 server.setErrorHandler((error, request, reply) => {
     server.log.error(error);
-    
+
     const statusCode = error.statusCode || 500;
     const message = statusCode === 500 ? 'Internal Server Error' : error.message;
-    
+
     reply.code(statusCode).send({
         success: false,
         error: {
@@ -206,7 +210,7 @@ server.setErrorHandler((error, request, reply) => {
 server.get('/health', async (request, reply) => {
     const uptime = process.uptime();
     const memoryUsage = process.memoryUsage();
-    
+
     return {
         success: true,
         data: {
@@ -272,7 +276,7 @@ server.get('/api/market/symbols', async (request, reply) => {
 server.get('/api/market/data/:symbol', async (request, reply) => {
     const { symbol } = request.params;
     const marketData = appData.marketData.get(symbol.toUpperCase());
-    
+
     if (!marketData) {
         // Generate mock data for unknown symbols
         const mockData = {
@@ -285,17 +289,17 @@ server.get('/api/market/data/:symbol', async (request, reply) => {
             low52: 2000 + Math.random() * 500,
             timestamp: new Date()
         };
-        
+
         // Calculate change percentage
         mockData.changePercent = (mockData.change / (mockData.price - mockData.change)) * 100;
-        
+
         return {
             success: true,
             data: mockData,
             source: 'mock'
         };
     }
-    
+
     return {
         success: true,
         data: marketData,
@@ -305,7 +309,7 @@ server.get('/api/market/data/:symbol', async (request, reply) => {
 
 server.get('/api/market/fusion/:symbol', async (request, reply) => {
     const { symbol } = request.params;
-    
+
     // Calculate fusion score based on multiple factors
     const factors = {
         satellite: Math.random() * 0.3 + 0.1, // 0.1 to 0.4
@@ -314,16 +318,16 @@ server.get('/api/market/fusion/:symbol', async (request, reply) => {
         web: Math.random() * 0.2 + 0.1,       // 0.1 to 0.3
         social: Math.random() * 0.2 + 0.1     // 0.1 to 0.3
     };
-    
+
     const fusionScore = Object.values(factors).reduce((sum, val) => sum + val, 0);
     const normalizedScore = Math.min(fusionScore, 1.0);
-    
+
     let signal = 'HOLD';
     if (normalizedScore > 0.7) signal = 'BUY';
     else if (normalizedScore < 0.3) signal = 'SELL';
-    
+
     const confidence = Math.abs(normalizedScore - 0.5) * 2;
-    
+
     return {
         success: true,
         data: {
@@ -346,7 +350,7 @@ server.get('/api/market/heatmap', async (request, reply) => {
         peRatio: sector.peRatio,
         color: getPerformanceColor(sector.performance)
     }));
-    
+
     return {
         success: true,
         data: sectors,
@@ -357,19 +361,19 @@ server.get('/api/market/heatmap', async (request, reply) => {
 // News Endpoints
 server.get('/api/news', async (request, reply) => {
     const { limit = 20, offset = 0, language = 'all', sector = 'all' } = request.query;
-    
+
     let filteredNews = appData.news;
-    
+
     if (language !== 'all') {
         filteredNews = filteredNews.filter(news => news.language === language);
     }
-    
+
     if (sector !== 'all') {
         filteredNews = filteredNews.filter(news => news.sector === sector);
     }
-    
+
     const paginatedNews = filteredNews.slice(parseInt(offset), parseInt(offset) + parseInt(limit));
-    
+
     return {
         success: true,
         data: paginatedNews,
@@ -384,7 +388,7 @@ server.get('/api/news', async (request, reply) => {
 
 server.post('/api/news', async (request, reply) => {
     const { title, content, sector, language, sentiment } = request.body;
-    
+
     if (!title || !content) {
         reply.code(400);
         return {
@@ -392,7 +396,7 @@ server.post('/api/news', async (request, reply) => {
             error: { message: 'Title and content are required' }
         };
     }
-    
+
     const newNews = {
         id: `news${Date.now()}`,
         title,
@@ -403,9 +407,9 @@ server.post('/api/news', async (request, reply) => {
         status: 'published',
         timestamp: new Date()
     };
-    
+
     appData.news.unshift(newNews);
-    
+
     return {
         success: true,
         data: newNews,
@@ -416,7 +420,7 @@ server.post('/api/news', async (request, reply) => {
 server.put('/api/news/:id', async (request, reply) => {
     const { id } = request.params;
     const updates = request.body;
-    
+
     const newsIndex = appData.news.findIndex(news => news.id === id);
     if (newsIndex === -1) {
         reply.code(404);
@@ -425,9 +429,9 @@ server.put('/api/news/:id', async (request, reply) => {
             error: { message: 'News article not found' }
         };
     }
-    
+
     appData.news[newsIndex] = { ...appData.news[newsIndex], ...updates };
-    
+
     return {
         success: true,
         data: appData.news[newsIndex],
@@ -437,7 +441,7 @@ server.put('/api/news/:id', async (request, reply) => {
 
 server.delete('/api/news/:id', async (request, reply) => {
     const { id } = request.params;
-    
+
     const newsIndex = appData.news.findIndex(news => news.id === id);
     if (newsIndex === -1) {
         reply.code(404);
@@ -446,9 +450,9 @@ server.delete('/api/news/:id', async (request, reply) => {
             error: { message: 'News article not found' }
         };
     }
-    
+
     const deletedNews = appData.news.splice(newsIndex, 1)[0];
-    
+
     return {
         success: true,
         data: deletedNews,
@@ -459,17 +463,17 @@ server.delete('/api/news/:id', async (request, reply) => {
 // Alerts Endpoints
 server.get('/api/alerts', async (request, reply) => {
     const { status = 'all', symbol } = request.query;
-    
+
     let filteredAlerts = appData.alerts;
-    
+
     if (status !== 'all') {
         filteredAlerts = filteredAlerts.filter(alert => alert.status === status);
     }
-    
+
     if (symbol) {
         filteredAlerts = filteredAlerts.filter(alert => alert.symbol === symbol.toUpperCase());
     }
-    
+
     return {
         success: true,
         data: filteredAlerts,
@@ -479,7 +483,7 @@ server.get('/api/alerts', async (request, reply) => {
 
 server.post('/api/alerts', async (request, reply) => {
     const { symbol, signal, entryPrice, targetPrice, stopLoss, confidence } = request.body;
-    
+
     if (!symbol || !signal || !entryPrice) {
         reply.code(400);
         return {
@@ -487,7 +491,7 @@ server.post('/api/alerts', async (request, reply) => {
             error: { message: 'Symbol, signal, and entry price are required' }
         };
     }
-    
+
     const newAlert = {
         id: `alert${Date.now()}`,
         symbol: symbol.toUpperCase(),
@@ -499,9 +503,9 @@ server.post('/api/alerts', async (request, reply) => {
         status: 'active',
         timestamp: new Date()
     };
-    
+
     appData.alerts.unshift(newAlert);
-    
+
     return {
         success: true,
         data: newAlert,
@@ -512,13 +516,13 @@ server.post('/api/alerts', async (request, reply) => {
 // IPO Endpoints
 server.get('/api/ipo', async (request, reply) => {
     const { status = 'all' } = request.query;
-    
+
     let filteredIPOs = Array.from(appData.ipos.values());
-    
+
     if (status !== 'all') {
         filteredIPOs = filteredIPOs.filter(ipo => ipo.status === status);
     }
-    
+
     return {
         success: true,
         data: filteredIPOs,
@@ -529,7 +533,7 @@ server.get('/api/ipo', async (request, reply) => {
 server.get('/api/ipo/:id', async (request, reply) => {
     const { id } = request.params;
     const ipo = appData.ipos.get(id);
-    
+
     if (!ipo) {
         reply.code(404);
         return {
@@ -537,7 +541,7 @@ server.get('/api/ipo/:id', async (request, reply) => {
             error: { message: 'IPO not found' }
         };
     }
-    
+
     return {
         success: true,
         data: ipo
@@ -551,7 +555,7 @@ server.get('/api/sectors', async (request, reply) => {
         ...sector,
         performanceColor: getPerformanceColor(sector.performance)
     }));
-    
+
     return {
         success: true,
         data: sectors,
@@ -562,7 +566,7 @@ server.get('/api/sectors', async (request, reply) => {
 server.get('/api/sectors/:id', async (request, reply) => {
     const { id } = request.params;
     const sector = appData.sectors.get(id.toUpperCase());
-    
+
     if (!sector) {
         reply.code(404);
         return {
@@ -570,7 +574,7 @@ server.get('/api/sectors/:id', async (request, reply) => {
             error: { message: 'Sector not found' }
         };
     }
-    
+
     return {
         success: true,
         data: {
@@ -584,7 +588,7 @@ server.get('/api/sectors/:id', async (request, reply) => {
 // Analytics Endpoints
 server.get('/api/analytics/dashboard', async (request, reply) => {
     const { timeframe = '24h' } = request.query;
-    
+
     const analytics = {
         users: {
             total: appData.users.size,
@@ -605,7 +609,7 @@ server.get('/api/analytics/dashboard', async (request, reply) => {
         },
         generatedAt: new Date().toISOString()
     };
-    
+
     return {
         success: true,
         data: analytics
@@ -614,15 +618,15 @@ server.get('/api/analytics/dashboard', async (request, reply) => {
 
 server.get('/api/analytics/users', async (request, reply) => {
     const { period = '7d' } = request.query;
-    
+
     // Generate user activity data
-    const userActivity = Array.from({length: 7}, (_, i) => ({
+    const userActivity = Array.from({ length: 7 }, (_, i) => ({
         date: new Date(Date.now() - (6 - i) * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         activeUsers: Math.floor(Math.random() * 1000) + 1000,
         newUsers: Math.floor(Math.random() * 50) + 20,
         sessions: Math.floor(Math.random() * 1500) + 1200
     }));
-    
+
     return {
         success: true,
         data: userActivity
@@ -632,17 +636,17 @@ server.get('/api/analytics/users', async (request, reply) => {
 // User Management Endpoints
 server.get('/api/users', async (request, reply) => {
     const { status = 'all', plan = 'all' } = request.query;
-    
+
     let users = Array.from(appData.users.values());
-    
+
     if (status !== 'all') {
         users = users.filter(user => user.status === status);
     }
-    
+
     if (plan !== 'all') {
         users = users.filter(user => user.plan === plan);
     }
-    
+
     return {
         success: true,
         data: users,
@@ -653,7 +657,7 @@ server.get('/api/users', async (request, reply) => {
 server.get('/api/users/:id', async (request, reply) => {
     const { id } = request.params;
     const user = appData.users.get(id);
-    
+
     if (!user) {
         reply.code(404);
         return {
@@ -661,7 +665,7 @@ server.get('/api/users/:id', async (request, reply) => {
             error: { message: 'User not found' }
         };
     }
-    
+
     return {
         success: true,
         data: user
@@ -670,7 +674,7 @@ server.get('/api/users/:id', async (request, reply) => {
 
 server.post('/api/users', async (request, reply) => {
     const { name, email, phone, plan = 'basic' } = request.body;
-    
+
     if (!name || !email) {
         reply.code(400);
         return {
@@ -678,7 +682,7 @@ server.post('/api/users', async (request, reply) => {
             error: { message: 'Name and email are required' }
         };
     }
-    
+
     const userId = `user${Date.now()}`;
     const newUser = {
         id: userId,
@@ -695,9 +699,9 @@ server.post('/api/users', async (request, reply) => {
         watchlist: [],
         createdAt: new Date()
     };
-    
+
     appData.users.set(userId, newUser);
-    
+
     return {
         success: true,
         data: newUser,
@@ -711,12 +715,12 @@ server.get('/api/ws/stream', async (request, reply) => {
     reply.header('Cache-Control', 'no-cache');
     reply.header('Connection', 'keep-alive');
     reply.header('Access-Control-Allow-Origin', '*');
-    
+
     const stream = reply.raw;
-    
+
     // Send initial data
     stream.write(`data: ${JSON.stringify({ type: 'connected', timestamp: new Date().toISOString() })}\n\n`);
-    
+
     // Send periodic updates
     const interval = setInterval(() => {
         const update = {
@@ -729,15 +733,15 @@ server.get('/api/ws/stream', async (request, reply) => {
                 volume: Math.floor(Math.random() * 1000000) + 100000
             }
         };
-        
+
         stream.write(`data: ${JSON.stringify(update)}\n\n`);
     }, 5000);
-    
+
     // Clean up on disconnect
     stream.on('close', () => {
         clearInterval(interval);
     });
-    
+
     return reply;
 });
 
@@ -752,15 +756,15 @@ function getPerformanceColor(performance) {
 
 function generateMarketData() {
     const symbols = ['NIFTY', 'BANK_NIFTY', 'SENSEX', 'RELIANCE', 'TCS', 'HDFC', 'INFY', 'ICICI'];
-    
+
     symbols.forEach(symbol => {
-        const basePrice = symbol === 'NIFTY' ? 18950 : 
-                         symbol === 'BANK_NIFTY' ? 42850 : 
-                         symbol === 'SENSEX' ? 63500 : 2000;
-        
+        const basePrice = symbol === 'NIFTY' ? 18950 :
+            symbol === 'BANK_NIFTY' ? 42850 :
+                symbol === 'SENSEX' ? 63500 : 2000;
+
         const price = basePrice + (Math.random() - 0.5) * (basePrice * 0.02);
         const change = (Math.random() - 0.5) * (basePrice * 0.01);
-        
+
         appData.marketData.set(symbol, {
             symbol,
             price: parseFloat(price.toFixed(2)),
@@ -779,14 +783,14 @@ async function startServer() {
     try {
         // Initialize data
         initializeData();
-        
+
         // Generate initial market data
         generateMarketData();
-        
+
         // Start periodic updates
         setInterval(() => {
             generateMarketData();
-            
+
             // Update IPO subscription data
             appData.ipos.forEach(ipo => {
                 if (ipo.status === 'open') {
@@ -795,16 +799,16 @@ async function startServer() {
                 }
             });
         }, 30000); // Update every 30 seconds
-        
+
         // Start the server
         await server.listen({ port: PORT, host: HOST });
-        
+
         console.log(`🚀 Panchmukhi Trading Brain Pro Backend started`);
         console.log(`📡 Server running on http://${HOST}:${PORT}`);
         console.log(`🔍 Health check: http://${HOST}:${PORT}/health`);
         console.log(`📊 API Documentation: http://${HOST}:${PORT}/docs`);
         console.log(`🧠 Ready to serve AI-powered trading insights!`);
-        
+
     } catch (error) {
         console.error('Failed to start server:', error);
         process.exit(1);

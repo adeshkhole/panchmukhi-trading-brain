@@ -1,339 +1,359 @@
-// News Management Page Script
-class NewsManager {
+// Enhanced News Management with Advanced Analytics
+class EnhancedNewsManager {
     constructor() {
         this.newsData = [];
         this.filteredData = [];
+        this.trendingTopics = [];
         this.init();
     }
 
     init() {
-        this.loadNews();
-        this.setupEventListeners();
+        setTimeout(() => {
+            this.loadNews();
+            this.setupEventListeners();
+            this.analyzeTrends();
+        }, 100);
+    }
+
+    // Load news with mock data for demo
+    async loadNews() {
+        try {
+            const response = await fetch('http://localhost:8083/api/news/aggregator');
+            const result = await response.json();
+            if (result.success) {
+                this.newsData = result.data.map(news => this.enrichNewsData(news));
+            } else {
+                this.loadMockNews();
+            }
+        } catch (e) {
+            console.log('Loading mock news data for demo');
+            this.loadMockNews();
+        }
+        this.filteredData = [...this.newsData];
         this.render();
     }
 
-    // Load news from localStorage
-    loadNews() {
-        try {
-            const stored = localStorage.getItem('panchimukhiNews');
-            this.newsData = stored ? JSON.parse(stored) : [];
-        } catch (e) {
-            console.error('Error loading news:', e);
-            this.newsData = [];
-        }
-        this.filteredData = [...this.newsData];
+    loadMockNews() {
+        this.newsData = [
+            {
+                id: 1,
+                title: 'Reliance Industries Q4 Results Beat Estimates',
+                content: 'Reliance Industries reported strong Q4 earnings with profit up 12%. Retail and digital services show robust growth. Stock surged 5% on the announcement.',
+                sector: 'Energy',
+                priority: 'High',
+                status: 'published',
+                language: 'en',
+                date: new Date().toISOString(),
+                sentiment: 'Positive',
+                sentimentScore: 85,
+                impactScore: 9.2,
+                relatedStocks: ['RELIANCE', 'RCOM'],
+                tags: ['earnings', 'retail', 'digital']
+            },
+            {
+                id: 2,
+                title: 'IT Sector Faces Headwinds as Dollar Strengthens',
+                content: 'Major IT companies facing margin pressure due to rupee appreciation. TCS and Infosys expected to revise guidance downward.',
+                sector: 'IT',
+                priority: 'High',
+                status: 'published',
+                language: 'en',
+                date: new Date(Date.now() - 3600000).toISOString(),
+                sentiment: 'Negative',
+                sentimentScore: 35,
+                impactScore: 7.8,
+                relatedStocks: ['TCS', 'INFY', 'WIPRO'],
+                tags: ['forex', 'margins', 'guidance']
+            },
+            {
+                id: 3,
+                title: 'RBI Keeps Rates Unchanged, Maintains Accommodative Stance',
+                content: 'Reserve Bank of India maintains repo rate at 6.5% citing inflation concerns. GDP growth forecast revised upward to 6.8%.',
+                sector: 'Banking',
+                priority: 'High',
+                status: 'published',
+                language: 'en',
+                date: new Date(Date.now() - 7200000).toISOString(),
+                sentiment: 'Neutral',
+                sentimentScore: 55,
+                impactScore: 8.5,
+                relatedStocks: ['HDFCBANK', 'ICICIBANK', 'SBIN'],
+                tags: ['rbi', 'rates', 'policy']
+            },
+            {
+                id: 4,
+                title: 'Pharma Exports Surge 18% in Q1',
+                content: 'Indian pharmaceutical exports show strong growth led by generic formulations to US and European markets.',
+                sector: 'Pharma',
+                priority: 'Medium',
+                status: 'published',
+                language: 'en',
+                date: new Date(Date.now() - 10800000).toISOString(),
+                sentiment: 'Positive',
+                sentimentScore: 75,
+                impactScore: 6.5,
+                relatedStocks: ['SUNPHARMA', 'DRREDDY', 'CIPLA'],
+                tags: ['exports', 'generics', 'usfda']
+            },
+            {
+                id: 5,
+                title: 'Auto Sales Decline 8% YoY Amid Chip Shortage',
+                content: 'Major automakers report decline in sales due to ongoing semiconductor shortage. Recovery expected in H2.',
+                sector: 'Auto',
+                priority: 'Medium',
+                status: 'published',
+                language: 'en',
+                date: new Date(Date.now() - 14400000).toISOString(),
+                sentiment: 'Negative',
+                sentimentScore: 40,
+                impactScore: 7.2,
+                relatedStocks: ['MARUTI', 'TATAMOTORS', 'M&M'],
+                tags: ['sales', 'chips', 'supply-chain']
+            },
+            {
+                id: 6,
+                title: 'Real Estate Sector Shows Signs of Revival',
+                content: 'Property sales in top 7 cities up 22% in Q1. Affordable housing driving growth with government support.',
+                sector: 'Real Estate',
+                priority: 'Low',
+                status: 'published',
+                language: 'en',
+                date: new Date(Date.now() - 18000000).toISOString(),
+                sentiment: 'Positive',
+                sentimentScore: 70,
+                impactScore: 5.5,
+                relatedStocks: ['DLF', 'GODREJPROP'],
+                tags: ['housing', 'sales', 'recovery']
+            }
+        ].map(news => this.enrichNewsData(news));
     }
 
-    // Get unique values from news array
-    getUniqueValues(key) {
-        return [...new Set(this.newsData.map(n => n[key]))].filter(Boolean);
+    enrichNewsData(news) {
+        // Add sentiment if not present
+        if (!news.sentiment) {
+            news.sentiment = this.analyzeSentiment(news.content);
+            news.sentimentScore = this.calculateSentimentScore(news.content);
+        }
+        // Add impact score if not present
+        if (!news.impactScore) {
+            news.impactScore = (Math.random() * 4 + 5).toFixed(1);
+        }
+        // Extract tags if not present
+        if (!news.tags) {
+            news.tags = this.extractKeywords(news.content);
+        }
+        // Add related stocks if not present
+        if (!news.relatedStocks) {
+            news.relatedStocks = [];
+        }
+        return news;
     }
 
-    // Update filter dropdowns dynamically
-    updateFilterOptions() {
-        const sectors = this.getUniqueValues('sector');
-        const statuses = this.getUniqueValues('status');
-        const languages = this.getUniqueValues('language');
+    analyzeSentiment(text) {
+        const positiveWords = ['surge', 'growth', 'strong', 'beat', 'gain', 'profit', 'success', 'up', 'positive', 'robust'];
+        const negativeWords = ['decline', 'fall', 'loss', 'weak', 'down', 'pressure', 'concern', 'negative', 'headwind'];
 
-        // Populate sector filter
-        const sectorSelect = document.getElementById('filterSector');
-        if (sectorSelect) {
-            const selected = sectorSelect.value;
-            sectorSelect.innerHTML = '<option value="">All Sectors</option>';
-            sectors.forEach(s => {
-                const opt = document.createElement('option');
-                opt.value = s;
-                opt.textContent = s;
-                sectorSelect.appendChild(opt);
-            });
-            sectorSelect.value = selected;
-        }
+        const lowerText = text.toLowerCase();
+        const positiveCount = positiveWords.filter(word => lowerText.includes(word)).length;
+        const negativeCount = negativeWords.filter(word => lowerText.includes(word)).length;
 
-        // Populate status filter
-        const statusSelect = document.getElementById('filterStatus');
-        if (statusSelect) {
-            const selected = statusSelect.value;
-            statusSelect.innerHTML = '<option value="">All Status</option>';
-            statuses.forEach(s => {
-                const opt = document.createElement('option');
-                opt.value = s;
-                opt.textContent = s;
-                statusSelect.appendChild(opt);
-            });
-            statusSelect.value = selected;
-        }
-
-        // Populate language filter
-        const langSelect = document.getElementById('filterLanguage');
-        if (langSelect) {
-            const selected = langSelect.value;
-            langSelect.innerHTML = '<option value="">All Languages</option>';
-            languages.forEach(l => {
-                const opt = document.createElement('option');
-                opt.value = l;
-                opt.textContent = l;
-                langSelect.appendChild(opt);
-            });
-            langSelect.value = selected;
-        }
+        if (positiveCount > negativeCount) return 'Positive';
+        if (negativeCount > positiveCount) return 'Negative';
+        return 'Neutral';
     }
 
-    // Apply all filters
+    calculateSentimentScore(text) {
+        const positiveWords = ['surge', 'growth', 'strong', 'beat', 'gain', 'profit', 'success', 'up', 'positive', 'robust'];
+        const negativeWords = ['decline', 'fall', 'loss', 'weak', 'down', 'pressure', 'concern', 'negative', 'headwind'];
+
+        const lowerText = text.toLowerCase();
+        const positiveCount = positiveWords.filter(word => lowerText.includes(word)).length;
+        const negativeCount = negativeWords.filter(word => lowerText.includes(word)).length;
+
+        const score = 50 + (positiveCount * 10) - (negativeCount * 10);
+        return Math.max(0, Math.min(100, score));
+    }
+
+    extractKeywords(text) {
+        const commonWords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by'];
+        const words = text.toLowerCase().split(/\W+/);
+        const filtered = words.filter(w => w.length > 3 && !commonWords.includes(w));
+        return [...new Set(filtered)].slice(0, 3);
+    }
+
+    analyzeTrends() {
+        const allTags = this.newsData.flatMap(n => n.tags || []);
+        const tagCounts = {};
+        allTags.forEach(tag => {
+            tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+        });
+
+        this.trendingTopics = Object.entries(tagCounts)
+            .sort((a, b) => b[1] - a[1])
+            .slice(0, 10)
+            .map(([tag, count]) => ({ tag, count }));
+    }
+
     applyFilters() {
         const search = document.getElementById('searchNews')?.value.toLowerCase() || '';
         const sector = document.getElementById('filterSector')?.value || '';
         const priority = document.getElementById('filterPriority')?.value || '';
-        const status = document.getElementById('filterStatus')?.value || '';
-        const language = document.getElementById('filterLanguage')?.value || '';
+        const sentiment = document.getElementById('filterSentiment')?.value || '';
 
         this.filteredData = this.newsData.filter(news => {
-            const matchSearch = !search || 
+            const matchSearch = !search ||
                 news.title.toLowerCase().includes(search) ||
                 news.content.toLowerCase().includes(search);
             const matchSector = !sector || news.sector === sector;
             const matchPriority = !priority || news.priority === priority;
-            const matchStatus = !status || news.status === status;
-            const matchLanguage = !language || news.language === language;
+            const matchSentiment = !sentiment || news.sentiment === sentiment;
 
-            return matchSearch && matchSector && matchPriority && matchStatus && matchLanguage;
+            return matchSearch && matchSector && matchPriority && matchSentiment;
         });
 
         this.render();
     }
 
-    // Update statistics cards
     updateStats() {
-        const totalCard = document.getElementById('statTotal');
-        const highCard = document.getElementById('statHigh');
-        const mediumCard = document.getElementById('statMedium');
-        const lowCard = document.getElementById('statLow');
+        const total = this.filteredData.length;
+        const positive = this.filteredData.filter(n => n.sentiment === 'Positive').length;
+        const negative = this.filteredData.filter(n => n.sentiment === 'Negative').length;
+        const neutral = this.filteredData.filter(n => n.sentiment === 'Neutral').length;
 
-        const filtered = this.filteredData;
-        const high = filtered.filter(n => n.priority === 'High').length;
-        const medium = filtered.filter(n => n.priority === 'Medium').length;
-        const low = filtered.filter(n => n.priority === 'Low').length;
-
-        if (totalCard) totalCard.textContent = filtered.length;
-        if (highCard) highCard.textContent = high;
-        if (mediumCard) mediumCard.textContent = medium;
-        if (lowCard) lowCard.textContent = low;
+        document.getElementById('statTotal').textContent = total;
+        document.getElementById('statPositive').textContent = positive;
+        document.getElementById('statNegative').textContent = negative;
+        document.getElementById('statNeutral').textContent = neutral;
     }
 
-    // Render news organized by priority
     render() {
         this.updateStats();
-        this.updateFilterOptions();
+        this.renderTrendingTopics();
+        this.renderNewsList();
+    }
 
-        const container = document.getElementById('newsByPriority');
+    renderTrendingTopics() {
+        const container = document.getElementById('trendingTopics');
         if (!container) return;
 
-        container.innerHTML = '';
+        container.innerHTML = this.trendingTopics.map((topic, index) => `
+            <div class="flex items-center justify-between p-2 bg-white/5 rounded hover:bg-white/10 transition">
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-orange-400">#${index + 1}</span>
+                    <span class="text-sm">${topic.tag}</span>
+                </div>
+                <span class="text-xs text-gray-500">${topic.count} news</span>
+            </div>
+        `).join('');
+    }
 
-        // Organize by priority
-        const priorities = ['High', 'Medium', 'Low'];
-        const priorityIcons = { 'High': '🔴', 'Medium': '🟡', 'Low': '🟢' };
-        const priorityColors = {
-            'High': 'from-red-900/20 to-red-900/5 border-red-800/30',
-            'Medium': 'from-yellow-900/20 to-yellow-900/5 border-yellow-800/30',
-            'Low': 'from-green-900/20 to-green-900/5 border-green-800/30'
-        };
+    renderNewsList() {
+        const container = document.getElementById('newsContainer');
+        if (!container) return;
 
-        priorities.forEach(priority => {
-            const newsInPriority = this.filteredData.filter(n => n.priority === priority);
-            
-            if (newsInPriority.length === 0) return;
-
-            const section = document.createElement('div');
-            section.className = 'mb-12';
-
-            // Section header
-            const header = document.createElement('div');
-            header.className = 'mb-6 flex items-center gap-3';
-            header.innerHTML = `
-                <span class="text-2xl">${priorityIcons[priority]}</span>
-                <h2 class="text-2xl font-bold text-white">
-                    ${priority} Priority
-                </h2>
-                <span class="ml-auto text-sm text-gray-400">
-                    ${newsInPriority.length} ${newsInPriority.length === 1 ? 'item' : 'items'}
-                </span>
-            `;
-            section.appendChild(header);
-
-            // News grid
-            const grid = document.createElement('div');
-            grid.className = 'news-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6';
-
-            newsInPriority.forEach(news => {
-                const card = this.createNewsCard(news, priority, priorityColors[priority]);
-                grid.appendChild(card);
-            });
-
-            section.appendChild(grid);
-            container.appendChild(section);
-        });
-
-        // If no results
         if (this.filteredData.length === 0) {
             container.innerHTML = `
-                <div class="text-center py-12">
-                    <p class="text-gray-400 text-lg">No news found matching your filters</p>
+                <div class="col-span-full text-center py-12 text-gray-400">
+                    No news found matching your filters
                 </div>
             `;
+            return;
         }
+
+        container.innerHTML = this.filteredData.map(news => this.createNewsCard(news)).join('');
     }
 
-    // Create individual news card
-    createNewsCard(news, priority, gradientClass) {
-        const card = document.createElement('div');
-        card.className = `glass-card bg-gradient-to-br ${gradientClass} p-6 rounded-lg border cursor-pointer hover:border-opacity-100 transition group`;
-        
-        const pubDate = news.date ? new Date(news.date).toLocaleDateString() : 'N/A';
-        const statusBadgeClass = {
-            'published': 'bg-green-900/30 text-green-400 border-green-700/30',
-            'draft': 'bg-gray-900/30 text-gray-400 border-gray-700/30',
-            'scheduled': 'bg-blue-900/30 text-blue-400 border-blue-700/30'
+    createNewsCard(news) {
+        const sentimentColor = {
+            'Positive': 'text-green-400 bg-green-500/20 border-green-500/30',
+            'Negative': 'text-red-400 bg-red-500/20 border-red-500/30',
+            'Neutral': 'text-yellow-400 bg-yellow-500/20 border-yellow-500/30'
         };
-        const statusClass = statusBadgeClass[news.status] || 'bg-gray-900/30 text-gray-400 border-gray-700/30';
 
-        card.innerHTML = `
-            <div class="flex justify-between items-start mb-3">
-                <h3 class="font-bold text-white flex-1 group-hover:text-orange-400 transition line-clamp-2">
-                    ${news.title}
-                </h3>
-                <span class="ml-2 whitespace-nowrap text-xs px-2 py-1 bg-orange-900/30 text-orange-400 border border-orange-700/30 rounded">
-                    ${news.sector}
-                </span>
-            </div>
-            <p class="text-gray-300 text-sm mb-4 line-clamp-2">${news.content}</p>
-            <div class="flex items-center justify-between">
-                <div class="flex gap-2 flex-wrap">
-                    <span class="text-xs px-2 py-1 ${statusClass} border rounded">
-                        ${news.status}
+        const impactColor = news.impactScore >= 8 ? 'text-red-400' : news.impactScore >= 6 ? 'text-yellow-400' : 'text-green-400';
+
+        return `
+            <div class="glass-card p-6 hover:border-orange-500/50 transition cursor-pointer" onclick="window.newsManager.showDetail(${news.id})">
+                <div class="flex justify-between items-start mb-3">
+                    <h3 class="font-bold text-white text-lg flex-1 hover:text-orange-400 transition">
+                        ${news.title}
+                    </h3>
+                </div>
+                
+                <p class="text-gray-400 text-sm mb-4 line-clamp-2">${news.content}</p>
+                
+                <div class="flex flex-wrap gap-2 mb-4">
+                    <span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded text-xs">${news.sector}</span>
+                    <span class="px-2 py-1 ${sentimentColor[news.sentiment]} border rounded text-xs">
+                        ${news.sentiment} (${news.sentimentScore})
                     </span>
-                    <span class="text-xs px-2 py-1 bg-purple-900/30 text-purple-400 border border-purple-700/30 rounded">
-                        ${news.language}
+                    <span class="px-2 py-1 bg-purple-500/20 text-purple-400 rounded text-xs">
+                        Impact: <span class="${impactColor} font-bold">${news.impactScore}/10</span>
                     </span>
                 </div>
-                <span class="text-xs text-gray-500">${pubDate}</span>
-            </div>
-        `;
-
-        card.addEventListener('click', () => this.showDetailModal(news));
-        return card;
-    }
-
-    // Show detail modal
-    showDetailModal(news) {
-        let modal = document.getElementById('newsDetailModal');
-        if (!modal) {
-            modal = document.createElement('div');
-            modal.id = 'newsDetailModal';
-            modal.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center hidden';
-            document.body.appendChild(modal);
-        }
-
-        const pubDate = news.date ? new Date(news.date).toLocaleDateString() : 'N/A';
-        const priorityBadgeClass = {
-            'High': 'bg-red-900/30 text-red-400 border-red-700/30',
-            'Medium': 'bg-yellow-900/30 text-yellow-400 border-yellow-700/30',
-            'Low': 'bg-green-900/30 text-green-400 border-green-700/30'
-        };
-        const statusBadgeClass = {
-            'published': 'bg-green-900/30 text-green-400 border-green-700/30',
-            'draft': 'bg-gray-900/30 text-gray-400 border-gray-700/30',
-            'scheduled': 'bg-blue-900/30 text-blue-400 border-blue-700/30'
-        };
-
-        modal.innerHTML = `
-            <div class="bg-slate-900/95 backdrop-blur border border-orange-500/20 rounded-lg max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
-                <div class="p-8">
-                    <div class="flex justify-between items-start mb-6">
-                        <h2 class="text-2xl font-bold text-white flex-1">${news.title}</h2>
-                        <button onclick="document.getElementById('newsDetailModal').classList.add('hidden')" class="text-gray-400 hover:text-white text-2xl leading-none">
-                            ×
-                        </button>
+                
+                ${news.relatedStocks && news.relatedStocks.length > 0 ? `
+                    <div class="flex flex-wrap gap-1 mb-3">
+                        <span class="text-xs text-gray-500">Related:</span>
+                        ${news.relatedStocks.map(stock => `
+                            <span class="px-2 py-0.5 bg-orange-500/20 text-orange-300 rounded text-xs">${stock}</span>
+                        `).join('')}
                     </div>
-
-                    <div class="grid grid-cols-2 gap-4 mb-6">
-                        <div>
-                            <p class="text-gray-500 text-sm">Sector</p>
-                            <p class="text-white font-semibold">${news.sector}</p>
-                        </div>
-                        <div>
-                            <p class="text-gray-500 text-sm">Priority</p>
-                            <span class="text-xs px-3 py-1 ${priorityBadgeClass[news.priority]} border rounded inline-block mt-1">
-                                ${news.priority}
-                            </span>
-                        </div>
-                        <div>
-                            <p class="text-gray-500 text-sm">Status</p>
-                            <span class="text-xs px-3 py-1 ${statusBadgeClass[news.status]} border rounded inline-block mt-1">
-                                ${news.status}
-                            </span>
-                        </div>
-                        <div>
-                            <p class="text-gray-500 text-sm">Language</p>
-                            <p class="text-white font-semibold">${news.language}</p>
-                        </div>
-                    </div>
-
-                    <div class="mb-6">
-                        <p class="text-gray-500 text-sm mb-2">Published Date</p>
-                        <p class="text-white">${pubDate}</p>
-                    </div>
-
-                    <div>
-                        <p class="text-gray-500 text-sm mb-2">Content</p>
-                        <p class="text-gray-300 leading-relaxed">${news.content}</p>
-                    </div>
-
-                    <div class="mt-8 flex gap-4">
-                        <button onclick="document.getElementById('newsDetailModal').classList.add('hidden')" class="flex-1 px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded border border-gray-700 transition">
-                            Close
-                        </button>
-                    </div>
+                ` : ''}
+                
+                <div class="flex justify-between items-center text-xs text-gray-500">
+                    <span>${new Date(news.date).toLocaleString()}</span>
+                    <span class="text-${news.priority === 'High' ? 'red' : news.priority === 'Medium' ? 'yellow' : 'green'}-400">
+                        ${news.priority} Priority
+                    </span>
                 </div>
             </div>
         `;
+    }
+
+    showDetail(newsId) {
+        const news = this.newsData.find(n => n.id === newsId);
+        if (!news) return;
+
+        const modal = document.getElementById('newsModal');
+        if (!modal) return;
+
+        document.getElementById('modalTitle').textContent = news.title;
+        document.getElementById('modalContent').textContent = news.content;
+        document.getElementById('modalSector').textContent = news.sector;
+        document.getElementById('modalSentiment').textContent = `${news.sentiment} (${news.sentimentScore}/100)`;
+        document.getElementById('modalImpact').textContent = `${news.impactScore}/10`;
+        document.getElementById('modalDate').textContent = new Date(news.date).toLocaleString();
+
+        const stocksContainer = document.getElementById('modalStocks');
+        stocksContainer.innerHTML = (news.relatedStocks || []).map(stock => `
+            <span class="px-2 py-1 bg-orange-500/20 text-orange-300 rounded text-sm">${stock}</span>
+        `).join('') || '<span class="text-gray-500">None</span>';
 
         modal.classList.remove('hidden');
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.classList.add('hidden');
-            }
-        });
     }
 
-    // Setup event listeners
+    closeModal() {
+        document.getElementById('newsModal').classList.add('hidden');
+    }
+
     setupEventListeners() {
-        const searchInput = document.getElementById('searchNews');
-        if (searchInput) {
-            searchInput.addEventListener('input', () => this.applyFilters());
-        }
-
-        const filterInputs = [
-            'filterSector',
-            'filterPriority',
-            'filterStatus',
-            'filterLanguage'
-        ];
-
-        filterInputs.forEach(id => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.addEventListener('change', () => this.applyFilters());
+        const filters = ['searchNews', 'filterSector', 'filterPriority', 'filterSentiment'];
+        filters.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener(id === 'searchNews' ? 'input' : 'change', () => this.applyFilters());
             }
+        });
+
+        document.getElementById('closeModal')?.addEventListener('click', () => this.closeModal());
+        document.getElementById('newsModal')?.addEventListener('click', (e) => {
+            if (e.target.id === 'newsModal') this.closeModal();
         });
     }
 }
 
-// Initialize when DOM is ready
+// Initialize
 document.addEventListener('DOMContentLoaded', () => {
-    new NewsManager();
-});
-
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    window.newsManager = new NewsManager();
+    window.newsManager = new EnhancedNewsManager();
 });

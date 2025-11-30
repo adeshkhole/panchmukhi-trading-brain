@@ -13,11 +13,135 @@ class TradingBrainApp {
         this.chart = null;
         this.ws = null;
         this.isOnline = navigator.onLine;
-        
+
+        // Multi-language Translations
+        this.translations = {
+            'en': {
+                'brand': 'Five Way Trading',
+                'brand-desc': 'AI Trading',
+                'dashboard': 'Dashboard',
+                'sectors': 'Sectors',
+                'ipo': 'IPO',
+                'news-mgmt': 'News',
+                'admin': 'Admin',
+                'alerts': 'Alerts',
+                'voice': 'Voice',
+                'theme': 'Theme',
+                'multi-language-desc': 'Real-time analysis, heatmaps, and stock comparison tools for 8 major sectors',
+                'market-overview': 'Market Overview',
+                'sector-heatmap': 'Sector Heatmap',
+                'sector-performance': 'Sector Performance',
+                'stock-comparison': 'Stock Comparison Tool',
+                'top-stocks': 'Top Stocks',
+                'volume': 'Volume',
+                'pe-ratio': 'P/E Ratio',
+                'today': 'Today'
+            },
+            'mr': {
+                'brand': 'पंचमुखी ट्रेडिंग',
+                'brand-desc': 'AI ट्रेडिंग',
+                'dashboard': 'डॅशबोर्ड',
+                'sectors': 'क्षेत्रे',
+                'ipo': 'IPO',
+                'news-mgmt': 'बातम्या',
+                'admin': 'अडमिन',
+                'alerts': 'अलर्ट्स',
+                'voice': 'आवाज',
+                'theme': 'थीम',
+                'multi-language-desc': '८ प्रमुख क्षेत्रांसाठी रिअल-टाइम विश्लेषण, हीटमॅप्स आणि स्टॉक तुलना साधने',
+                'market-overview': 'बाजार आढावा',
+                'sector-heatmap': 'क्षेत्र हीटमॅप',
+                'sector-performance': 'क्षेत्र कामगिरी',
+                'stock-comparison': 'स्टॉक तुलना साधन',
+                'top-stocks': 'शीर्ष स्टॉक्स',
+                'volume': 'व्हॉल्यूम',
+                'pe-ratio': 'P/E गुणोत्तर',
+                'today': 'आज'
+            },
+            'hi': {
+                'brand': 'पंचमुखी ट्रेडिंग',
+                'brand-desc': 'AI ट्रेडिंग',
+                'dashboard': 'डैशबोर्ड',
+                'sectors': 'क्षेत्र',
+                'ipo': 'IPO',
+                'news-mgmt': 'समाचार',
+                'admin': 'एडमिन',
+                'alerts': 'अलर्ट्स',
+                'voice': 'आवाज़',
+                'theme': 'थीम',
+                'multi-language-desc': '8 प्रमुख क्षेत्रों के लिए रीयल-टाइम विश्लेषण, हीटमैप और स्टॉक तुलना उपकरण',
+                'market-overview': 'बाजार अवलोकन',
+                'sector-heatmap': 'क्षेत्र हीटमैप',
+                'sector-performance': 'क्षेत्र प्रदर्शन',
+                'stock-comparison': 'स्टॉक तुलना उपकरण',
+                'top-stocks': 'शीर्ष स्टॉक्स',
+                'volume': 'वॉल्यूम',
+                'pe-ratio': 'P/E अनुपात',
+                'today': 'आज'
+            },
+            'gu': {
+                'brand': 'પંચમુખી ટ્રેડિંગ',
+                'brand-desc': 'AI ટ્રેડિંગ',
+                'dashboard': 'ડેશબોર્ડ',
+                'sectors': 'ક્ષેત્રો',
+                'ipo': 'IPO',
+                'news-mgmt': 'સમાચાર',
+                'admin': 'એડમિન',
+                'alerts': 'એલર્ટ્સ',
+                'voice': 'અવાજ',
+                'theme': 'થીમ',
+                'multi-language-desc': '8 મુખ્ય ક્ષેત્રો માટે રીઅલ-ટાઇમ વિશ્લેષણ, હીટમેપ્સ અને સ્ટોક સરખામણી સાધનો',
+                'market-overview': 'બજાર વિહંગાવલોકન',
+                'sector-heatmap': 'ક્ષેત્ર હીટમેપ',
+                'sector-performance': 'ક્ષેત્ર પ્રદર્શન',
+                'stock-comparison': 'સ્ટોક સરખામણી સાધન',
+                'top-stocks': 'ટોચના સ્ટોક્સ',
+                'volume': 'વોલ્યુમ',
+                'pe-ratio': 'P/E રેશિયો',
+                'today': 'આજે'
+            },
+            'kn': {
+                'brand': 'ಪಂಚಮುಖಿ ಟ್ರೇಡಿಂಗ್',
+                'brand-desc': 'AI ಟ್ರೇಡಿಂಗ್',
+                'dashboard': 'ಡ್ಯಾಶ್‌ಬೋರ್ಡ್',
+                'sectors': 'ವಲಯಗಳು',
+                'ipo': 'IPO',
+                'news-mgmt': 'ಸುದ್ದಿ',
+                'admin': 'ನಿರ್ವಾಹಕ',
+                'alerts': 'ಎಚ್ಚರಿಕೆಗಳು',
+                'voice': 'ಧ್ವನಿ',
+                'theme': 'ಥೀಮ್',
+                'multi-language-desc': '8 ಪ್ರಮುಖ ವಲಯಗಳಿಗೆ ನೈಜ-ಸಮಯದ ವಿಶ್ಲೇಷಣೆ, ಶಾಖ ನಕ್ಷೆಗಳು ಮತ್ತು ಸ್ಟಾಕ್ ಹೋಲಿಕೆ ಪರಿಕರಗಳು',
+                'market-overview': 'ಮಾರುಕಟ್ಟೆ ಅವಲೋಕನ',
+                'sector-heatmap': 'ವಲಯ ಶಾಖ ನಕ್ಷೆ',
+                'sector-performance': 'ವಲಯ ಕಾರ್ಯಕ್ಷಮತೆ',
+                'stock-comparison': 'ಸ್ಟಾಕ್ ಹೋಲಿಕೆ ಸಾಧನ',
+                'top-stocks': 'ಅಗ್ರ ಸ್ಟಾಕ್‌ಗಳು',
+                'volume': 'ಪರಿಮಾಣ',
+                'pe-ratio': 'P/E ಅನುಪಾತ',
+                'today': 'ಇಂದು'
+            }
+        };
+
         this.init();
     }
 
-    init() {
+    async init() {
+        // Wait for apiClient to be available
+        // Wait for apiClient to be available with retries
+        let retries = 0;
+        while (!window.apiClient && retries < 10) {
+            console.warn(`ApiClient not loaded, waiting... (${retries + 1}/10)`);
+            await new Promise(resolve => setTimeout(resolve, 200));
+            retries++;
+        }
+
+        if (!window.apiClient) {
+            console.error('ApiClient failed to load after multiple retries.');
+            alert('System Error: Failed to load API Client. Please refresh the page.');
+            return;
+        }
+
         this.setupEventListeners();
         this.initializeLanguage();
         this.initializeParticles();
@@ -28,7 +152,101 @@ class TradingBrainApp {
         this.startRealTimeUpdates();
         this.setupScrollAnimations();
         this.setupVoiceRecognition();
+        this.setupVoiceRecognition();
         this.initializePWA();
+
+        // Listen for shared header insertion to re-bind events
+        document.addEventListener('header-inserted', () => {
+            console.log('Main: Header inserted, re-initializing UI...');
+            this.setupEventListeners();
+            this.initializeLanguage();
+            // Re-apply theme if needed
+            const savedTheme = localStorage.getItem('tradingBrainTheme') || 'dark';
+            if (savedTheme === 'light') {
+                document.body.classList.remove('dark-theme');
+                document.body.classList.add('light-theme');
+            } else {
+                document.body.classList.add('dark-theme');
+                document.body.classList.remove('light-theme');
+            }
+        });
+
+        // Initial data fetch
+        this.fetchInitialData();
+    }
+
+    async fetchInitialData() {
+        try {
+            const sectors = await window.apiClient.getSectors();
+            console.log('Sectors loaded:', sectors);
+            // Update UI with sectors
+            this.updateUIWithSectors(sectors.data);
+        } catch (error) {
+            console.error('Failed to fetch initial data:', error);
+        }
+    }
+
+    updateUIWithSectors(sectors) {
+        if (!sectors || !Array.isArray(sectors)) return;
+
+        // Update Market Overview if elements exist
+        const niftyEl = document.getElementById('niftyValue');
+        if (niftyEl) {
+            const nifty = sectors.find(s => s.name === 'NIFTY 50');
+            if (nifty) niftyEl.textContent = `₹${nifty.value.toLocaleString('en-IN')}`;
+        }
+
+        // Update Sector Cards if container exists
+        const container = document.querySelector('.sector-grid');
+        if (container) {
+            container.innerHTML = ''; // Clear loading/static content
+
+            sectors.forEach(sector => {
+                // Skip indices, show only sectors if needed, or show all. 
+                // For now, let's filter out main indices to show "Sectors"
+                if (sector.name.includes('NIFTY 50') || sector.name.includes('BANK NIFTY')) return;
+
+                const isPositive = sector.change >= 0;
+                const colorClass = isPositive ? 'text-green-400' : 'text-red-400';
+                const bgGradient = isPositive ? 'from-green-400 to-green-600' : 'from-red-400 to-red-600';
+                const width = Math.abs(sector.change) * 20; // Scale for visual bar
+
+                const card = document.createElement('div');
+                card.className = 'sector-card glass-card p-6 fade-in visible';
+                card.innerHTML = `
+                    <div class="flex items-center justify-between mb-4">
+                        <div class="flex items-center space-x-3">
+                            <img src="resources/sector-icon.svg" alt="sector" class="w-12 h-12 rounded-lg object-cover" />
+                            <div>
+                                <h3 class="text-xl font-bold marathi-text">${sector.name}</h3>
+                                <p class="text-sm text-gray-400">${sector.status === 'positive' ? 'Bullish' : 'Bearish'}</p>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-2xl font-bold ${colorClass}">${isPositive ? '+' : ''}${sector.change}%</div>
+                            <div class="text-sm text-gray-400" data-lang-key="today">Today</div>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-3 mb-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm" data-lang-key="volume">Volume:</span>
+                            <span class="font-semibold">12.5M</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm">Value:</span>
+                            <span class="font-semibold mono-text">₹${sector.value.toLocaleString()}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="performance-indicator mb-3">
+                        <div class="performance-bar bg-gradient-to-r ${bgGradient}" style="width: ${Math.min(width, 100)}%"></div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
     }
 
     // Safe DOM getter to avoid runtime errors when elements are absent
@@ -48,7 +266,7 @@ class TradingBrainApp {
         const langEl = this.safeGet('languageSelect');
         if (langEl) {
             // ensure the select reflects saved language
-            try { langEl.value = savedLang; } catch (e) {}
+            try { langEl.value = savedLang; } catch (e) { }
             // bind change handler only once
             try {
                 if (!langEl.dataset.langBound) {
@@ -74,9 +292,9 @@ class TradingBrainApp {
         localStorage.setItem('tradingBrainLanguage', lang);
         const langEl = this.safeGet('languageSelect');
         if (langEl) {
-            try { langEl.value = lang; } catch (e) {}
+            try { langEl.value = lang; } catch (e) { }
         }
-        
+
         // Update all translatable elements
         document.querySelectorAll('[data-lang-key]').forEach(element => {
             const key = element.getAttribute('data-lang-key');
@@ -164,7 +382,7 @@ class TradingBrainApp {
             li.addEventListener('click', (e) => {
                 const val = e.currentTarget.dataset.value;
                 // update native select
-                try { selectEl.value = val; } catch (er) {}
+                try { selectEl.value = val; } catch (er) { }
                 // dispatch change
                 const changeEvent = new Event('change', { bubbles: true });
                 selectEl.dispatchEvent(changeEvent);
@@ -504,7 +722,7 @@ class TradingBrainApp {
         new p5((p) => {
             let particles = [];
             let connections = [];
-            
+
             p.setup = () => {
                 let canvas = p.createCanvas(p.windowWidth, p.windowHeight);
                 canvas.parent('particles');
@@ -512,7 +730,7 @@ class TradingBrainApp {
                 canvas.style('top', '0');
                 canvas.style('left', '0');
                 canvas.style('z-index', '1');
-                
+
                 // Create intelligent particles
                 for (let i = 0; i < 80; i++) {
                     particles.push({
@@ -527,34 +745,34 @@ class TradingBrainApp {
                     });
                 }
             };
-            
+
             p.draw = () => {
                 p.clear();
-                
+
                 // Update particles with AI-like behavior
                 particles.forEach((particle, i) => {
                     // Smart movement with market data influence
                     particle.x += particle.vx * (1 + particle.intelligence * 0.5);
                     particle.y += particle.vy * (1 + particle.intelligence * 0.5);
-                    
+
                     // Wrap around edges
                     if (particle.x < 0) particle.x = p.width;
                     if (particle.x > p.width) particle.x = 0;
                     if (particle.y < 0) particle.y = p.height;
                     if (particle.y > p.height) particle.y = 0;
-                    
+
                     // Draw particle with intelligence-based color
                     let hue = 20 + particle.intelligence * 40; // Orange to yellow
                     p.fill(hue, 80, 60, particle.opacity * 100);
                     p.noStroke();
                     p.circle(particle.x, particle.y, particle.size);
-                    
+
                     // Smart connections
                     particles.forEach((other, j) => {
                         if (i !== j) {
                             let distance = p.dist(particle.x, particle.y, other.x, other.y);
                             if (distance < 120 && Math.abs(particle.intelligence - other.intelligence) < 0.3) {
-                                let alpha = (1 - distance/120) * 30 * Math.min(particle.intelligence, other.intelligence);
+                                let alpha = (1 - distance / 120) * 30 * Math.min(particle.intelligence, other.intelligence);
                                 p.stroke(hue, 80, 60, alpha);
                                 p.strokeWeight(0.5 + particle.intelligence * 1.5);
                                 p.line(particle.x, particle.y, other.x, other.y);
@@ -563,7 +781,7 @@ class TradingBrainApp {
                     });
                 });
             };
-            
+
             p.windowResized = () => {
                 p.resizeCanvas(p.windowWidth, p.windowHeight);
             };
@@ -592,84 +810,332 @@ class TradingBrainApp {
         }
     }
 
-    // Market Chart Initialization
+    // Market Chart Initialization - TradingView Style
     initializeMarketChart() {
         const chartDom = this.safeGet('marketChart');
-        if (!chartDom || typeof echarts === 'undefined') return;
+        if (!chartDom || typeof echarts === 'undefined') {
+            console.warn('Chart container or echarts not available');
+            return;
+        }
+
         this.chart = echarts.init(chartDom, 'dark');
-        
+
+        const timeData = this.generateTimeData();
+        const priceData = this.generateCandlestickData();
+        const volumeData = this.generateVolumeData(priceData);
+
         const option = {
-            backgroundColor: 'transparent',
-            grid: {
-                left: '3%',
-                right: '4%',
-                bottom: '3%',
-                containLabel: true
-            },
-            xAxis: {
-                type: 'category',
-                data: this.generateTimeData(),
-                axisLine: { lineStyle: { color: '#444' } },
-                axisLabel: { color: '#888' }
-            },
-            yAxis: {
-                type: 'value',
-                axisLine: { lineStyle: { color: '#444' } },
-                axisLabel: { color: '#888' },
-                splitLine: { lineStyle: { color: '#333' } }
-            },
-            series: [{
-                name: 'NIFTY 50',
-                type: 'candlestick',
-                data: this.generateCandlestickData(),
-                itemStyle: {
-                    color: '#22C55E',
-                    color0: '#EF4444',
-                    borderColor: '#22C55E',
-                    borderColor0: '#EF4444'
+            backgroundColor: '#131722',
+            animation: true,
+            grid: [
+                {
+                    left: '8%',
+                    right: '3%',
+                    top: '8%',
+                    height: '60%'
+                },
+                {
+                    left: '8%',
+                    right: '3%',
+                    top: '73%',
+                    height: '15%'
                 }
-            }],
+            ],
+            xAxis: [
+                {
+                    type: 'category',
+                    data: timeData,
+                    scale: true,
+                    boundaryGap: true,
+                    axisLine: {
+                        lineStyle: { color: '#2B2F3B' },
+                        onZero: false
+                    },
+                    axisTick: { show: false },
+                    splitLine: { show: false },
+                    axisLabel: {
+                        color: '#8A8D93',
+                        fontSize: 11,
+                        fontFamily: 'monospace'
+                    },
+                    min: 'dataMin',
+                    max: 'dataMax'
+                },
+                {
+                    type: 'category',
+                    gridIndex: 1,
+                    data: timeData,
+                    scale: true,
+                    boundaryGap: true,
+                    axisLine: { lineStyle: { color: '#2B2F3B' } },
+                    axisTick: { show: false },
+                    splitLine: { show: false },
+                    axisLabel: {
+                        color: '#8A8D93',
+                        fontSize: 11
+                    }
+                }
+            ],
+            yAxis: [
+                {
+                    scale: true,
+                    position: 'right',
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    splitLine: {
+                        lineStyle: {
+                            color: '#2B2F3B',
+                            type: 'solid'
+                        }
+                    },
+                    axisLabel: {
+                        color: '#8A8D93',
+                        fontSize: 11,
+                        fontFamily: 'monospace',
+                        formatter: (value) => value.toFixed(0)
+                    }
+                },
+                {
+                    scale: true,
+                    gridIndex: 1,
+                    position: 'right',
+                    splitNumber: 2,
+                    axisLine: { show: false },
+                    axisTick: { show: false },
+                    splitLine: { show: false },
+                    axisLabel: {
+                        color: '#8A8D93',
+                        fontSize: 10
+                    }
+                }
+            ],
+            dataZoom: [
+                {
+                    type: 'inside',
+                    xAxisIndex: [0, 1],
+                    start: 70,
+                    end: 100
+                },
+                {
+                    show: true,
+                    xAxisIndex: [0, 1],
+                    type: 'slider',
+                    bottom: '2%',
+                    start: 70,
+                    end: 100,
+                    height: 20,
+                    handleSize: '100%',
+                    handleStyle: {
+                        color: '#3C4254'
+                    },
+                    textStyle: {
+                        color: '#8A8D93'
+                    },
+                    borderColor: '#2B2F3B',
+                    fillerColor: 'rgba(76, 175, 80, 0.1)',
+                    backgroundColor: '#1E222D'
+                }
+            ],
             tooltip: {
                 trigger: 'axis',
-                backgroundColor: 'rgba(0,0,0,0.8)',
-                borderColor: '#FF6B35',
-                textStyle: { color: '#fff' }
-            }
+                axisPointer: {
+                    type: 'cross',
+                    crossStyle: {
+                        color: '#758696'
+                    },
+                    lineStyle: {
+                        color: '#758696',
+                        type: 'dashed'
+                    }
+                },
+                backgroundColor: 'rgba(24, 26, 35, 0.95)',
+                borderColor: '#3C4254',
+                borderWidth: 1,
+                textStyle: {
+                    color: '#D1D4DC',
+                    fontSize: 12,
+                    fontFamily: 'monospace'
+                },
+                formatter: (params) => {
+                    const candleData = params[0];
+                    if (!candleData || !candleData.data) return '';
+
+                    const [open, close, low, high] = candleData.data;
+                    const change = close - open;
+                    const changePercent = ((change / open) * 100).toFixed(2);
+                    const color = change >= 0 ? '#26A69A' : '#EF5350';
+
+                    return `
+                        <div style="padding: 8px; min-width: 200px;">
+                            <div style="font-weight: bold; margin-bottom: 8px; color: #D1D4DC;">
+                                ${candleData.name}
+                            </div>
+                            <div style="display: grid; grid-template-columns: 80px 1fr; gap: 6px; font-size: 11px;">
+                                <span style="color: #8A8D93;">Open:</span>
+                                <span style="color: #D1D4DC; font-weight: 500;">₹${open.toFixed(2)}</span>
+                                
+                                <span style="color: #8A8D93;">High:</span>
+                                <span style="color: #26A69A; font-weight: 500;">₹${high.toFixed(2)}</span>
+                                
+                                <span style="color: #8A8D93;">Low:</span>
+                                <span style="color: #EF5350; font-weight: 500;">₹${low.toFixed(2)}</span>
+                                
+                                <span style="color: #8A8D93;">Close:</span>
+                                <span style="color: ${color}; font-weight: 500;">₹${close.toFixed(2)}</span>
+                                
+                                <span style="color: #8A8D93;">Change:</span>
+                                <span style="color: ${color}; font-weight: 600;">
+                                    ${change >= 0 ? '+' : ''}${change.toFixed(2)} (${changePercent}%)
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                }
+            },
+            series: [
+                {
+                    name: 'NIFTY 50',
+                    type: 'candlestick',
+                    data: priceData,
+                    barWidth: '70%',
+                    itemStyle: {
+                        color: '#26A69A',
+                        color0: '#EF5350',
+                        borderColor: '#26A69A',
+                        borderColor0: '#EF5350',
+                        borderWidth: 1.5
+                    },
+                    emphasis: {
+                        itemStyle: {
+                            color: '#26A69A',
+                            color0: '#EF5350',
+                            borderColor: '#26A69A',
+                            borderColor0: '#EF5350',
+                            borderWidth: 2
+                        }
+                    }
+                },
+                {
+                    name: 'Volume',
+                    type: 'bar',
+                    xAxisIndex: 1,
+                    yAxisIndex: 1,
+                    data: volumeData,
+                    itemStyle: {
+                        color: (params) => {
+                            const candleData = priceData[params.dataIndex];
+                            return candleData[1] >= candleData[0]
+                                ? 'rgba(38, 166, 154, 0.5)'
+                                : 'rgba(239, 83, 80, 0.5)';
+                        }
+                    },
+                    barWidth: '70%'
+                }
+            ]
         };
-        
+
         this.chart.setOption(option);
-        
+
         // Handle window resize
         window.addEventListener('resize', () => {
-            this.chart.resize();
+            if (this.chart) this.chart.resize();
         });
+
+        // Start live simulation
+        this.simulateLiveUpdates();
+    }
+
+    simulateLiveUpdates() {
+        setInterval(() => {
+            if (!this.chart) return;
+
+            try {
+                const option = this.chart.getOption();
+                const data = option.series[0].data;
+                const volumeData = option.series[1].data;
+
+                if (!data || data.length === 0) return;
+
+                const lastData = data[data.length - 1];
+
+                // Update last candle (Open, Close, Low, High)
+                const currentClose = lastData[1] + (Math.random() - 0.48) * 8;
+                const currentHigh = Math.max(lastData[3], currentClose, lastData[0]);
+                const currentLow = Math.min(lastData[2], currentClose, lastData[0]);
+
+                lastData[1] = currentClose;
+                lastData[2] = currentLow;
+                lastData[3] = currentHigh;
+
+                data[data.length - 1] = lastData;
+
+                // Update volume
+                const lastVolume = volumeData[volumeData.length - 1];
+                volumeData[volumeData.length - 1] = lastVolume + (Math.random() - 0.5) * 500;
+
+                this.chart.setOption({
+                    series: [
+                        { data: data },
+                        { data: volumeData }
+                    ]
+                }, false, false);
+            } catch (error) {
+                console.error('Error updating chart:', error);
+            }
+        }, 2500); // Update every 2.5 seconds
     }
 
     generateTimeData() {
         const times = [];
+        const start = new Date();
+        start.setHours(9, 15, 0, 0);
+
         const now = new Date();
-        for (let i = 30; i >= 0; i--) {
-            const time = new Date(now.getTime() - i * 5 * 60000); // 5 minute intervals
-            times.push(time.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }));
+        const end = new Date();
+        end.setHours(15, 30, 0, 0);
+
+        const limit = Math.min(now.getTime(), end.getTime());
+
+        for (let time = start.getTime(); time <= limit; time += 5 * 60000) {
+            times.push(new Date(time).toLocaleTimeString('en-IN', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            }));
         }
+
         return times;
     }
 
     generateCandlestickData() {
         const data = [];
-        let basePrice = 17850;
-        
-        for (let i = 0; i < 31; i++) {
-            const open = basePrice + (Math.random() - 0.5) * 50;
-            const close = open + (Math.random() - 0.5) * 100;
-            const high = Math.max(open, close) + Math.random() * 30;
-            const low = Math.min(open, close) - Math.random() * 30;
-            
-            data.push([open, close, low, high]);
+        let basePrice = 24350;
+        const times = this.generateTimeData();
+
+        for (let i = 0; i < times.length; i++) {
+            const trend = Math.sin(i / 15) * 35;
+            const volatility = (Math.random() - 0.5) * 60;
+
+            const open = basePrice + trend + volatility;
+            const close = open + (Math.random() - 0.48) * 45;
+            const high = Math.max(open, close) + Math.random() * 25;
+            const low = Math.min(open, close) - Math.random() * 25;
+
+            data.push([
+                parseFloat(open.toFixed(2)),
+                parseFloat(close.toFixed(2)),
+                parseFloat(low.toFixed(2)),
+                parseFloat(high.toFixed(2))
+            ]);
+
             basePrice = close;
         }
-        
+
         return data;
+    }
+
+    generateVolumeData(priceData) {
+        return priceData.map(() => Math.floor(Math.random() * 5000 + 2000));
     }
 
     // WebSocket for real-time data
@@ -677,7 +1143,7 @@ class TradingBrainApp {
         if (this.ws) {
             this.ws.close();
         }
-        
+
         // Simulate WebSocket connection
         this.ws = {
             readyState: 1, // OPEN
@@ -688,54 +1154,67 @@ class TradingBrainApp {
                 console.log('WebSocket closed');
             }
         };
-        
+
         // Simulate real-time updates
         setInterval(() => {
             this.updateMarketData();
         }, 2000);
     }
 
-    updateMarketData() {
-        // Update fusion score
-        this.fusionScore = 0.5 + Math.random() * 0.5;
-        const fusionEl = this.safeGet('fusionScore');
-        if (fusionEl) fusionEl.textContent = this.fusionScore.toFixed(2);
+    async updateMarketData() {
+        if (!window.apiClient) return;
 
-        // Update fusion circle
-        const circle = this.safeGet('fusionCircle');
-        if (circle) {
-            try {
-                const circumference = 2 * Math.PI * 56;
-                const offset = circumference - (this.fusionScore * circumference);
-                circle.style.strokeDashoffset = offset;
-            } catch (e) { /* ignore */ }
-        }
+        try {
+            // Fetch latest data for all symbols
+            const symbols = ['NIFTY', 'BANK_NIFTY', 'SENSEX', 'RELIANCE', 'TCS'];
+            // Fetch real data from backend
+            const fusionData = await window.apiClient.getFusionScore('NIFTY');
 
-        // Update signal
-        const signal = this.safeGet('fusionSignal');
-        const confidence = this.safeGet('fusionConfidence');
+            if (fusionData && fusionData.success) {
+                this.fusionScore = fusionData.data.fusionScore;
 
-        if (signal) {
-            if (this.fusionScore > 0.7) {
-                signal.textContent = 'BUY';
-                signal.className = 'text-2xl font-bold signal-buy';
-            } else if (this.fusionScore < 0.3) {
-                signal.textContent = 'SELL';
-                signal.className = 'text-2xl font-bold signal-sell';
-            } else {
-                signal.textContent = 'HOLD';
-                signal.className = 'text-2xl font-bold signal-hold';
+                const fusionEl = this.safeGet('fusionScore');
+                if (fusionEl) fusionEl.textContent = this.fusionScore.toFixed(2);
+
+                // Update fusion circle
+                const circle = this.safeGet('fusionCircle');
+                if (circle) {
+                    try {
+                        const circumference = 2 * Math.PI * 56;
+                        const offset = circumference - (this.fusionScore * circumference);
+                        circle.style.strokeDashoffset = offset;
+                    } catch (e) { /* ignore */ }
+                }
+
+                // Update signal
+                const signal = this.safeGet('fusionSignal');
+                const confidence = this.safeGet('fusionConfidence');
+
+                if (signal) {
+                    const signalText = fusionData.data.signal;
+                    signal.textContent = signalText;
+
+                    if (signalText === 'BUY') {
+                        signal.className = 'text-2xl font-bold signal-buy';
+                    } else if (signalText === 'SELL') {
+                        signal.className = 'text-2xl font-bold signal-sell';
+                    } else {
+                        signal.className = 'text-2xl font-bold signal-hold';
+                    }
+                }
+
+                if (confidence) {
+                    const conf = fusionData.data.confidence * 100;
+                    confidence.textContent = `Confidence: ${conf.toFixed(0)}%`;
+                }
             }
+        } catch (error) {
+            console.error('Error updating market data:', error);
         }
 
-        if (confidence) {
-            const conf = Math.abs(this.fusionScore - 0.5) * 2 * 100;
-            confidence.textContent = `Confidence: ${conf.toFixed(0)}%`;
-        }
-        
         // Update data cards with animation
         this.updateDataCards();
-        
+
         // Voice alerts for significant changes
         if (this.voiceSettings.enabled && Math.random() > 0.8) {
             this.speakMarketUpdate();
@@ -749,7 +1228,7 @@ class TradingBrainApp {
             if (progressBar) {
                 const newWidth = 50 + Math.random() * 50;
                 progressBar.style.width = `${newWidth}%`;
-                
+
                 // Add pulse animation
                 card.classList.add('pulse-animation');
                 setTimeout(() => {
@@ -767,12 +1246,12 @@ class TradingBrainApp {
             this.recognition.continuous = false;
             this.recognition.interimResults = false;
             this.recognition.lang = 'mr-IN';
-            
+
             this.recognition.onresult = (event) => {
                 const command = event.results[0][0].transcript.toLowerCase();
                 this.processVoiceCommand(command);
             };
-            
+
             this.recognition.onerror = (event) => {
                 console.error('Voice recognition error:', event.error);
             };
@@ -781,7 +1260,7 @@ class TradingBrainApp {
 
     processVoiceCommand(command) {
         console.log('Voice command:', command);
-        
+
         if (command.includes('buy') || command.includes('buying') || command.includes('खरेदी')) {
             this.speakText('खरेदी सिग्नल नोंदवल');
         } else if (command.includes('sell') || command.includes('selling') || command.includes('विक्री')) {
@@ -795,14 +1274,14 @@ class TradingBrainApp {
 
     speakText(text) {
         if (!this.voiceSettings.enabled) return;
-        
+
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = this.voiceSettings.language === 'mr' ? 'mr-IN' : 
-                         this.voiceSettings.language === 'hi' ? 'hi-IN' : 'en-IN';
+        utterance.lang = this.voiceSettings.language === 'mr' ? 'mr-IN' :
+            this.voiceSettings.language === 'hi' ? 'hi-IN' : 'en-IN';
         utterance.volume = this.voiceSettings.volume;
         utterance.rate = 0.8;
         utterance.pitch = 1;
-        
+
         speechSynthesis.speak(utterance);
     }
 
@@ -813,7 +1292,7 @@ class TradingBrainApp {
             'रिलायन्स आणि TCS यामध्ये चांगली हालचाल दिसतेय',
             'FII फ्लो पॉझिटिव्ह आहे'
         ];
-        
+
         const randomUpdate = updates[Math.floor(Math.random() * updates.length)];
         this.speakText(randomUpdate);
     }
@@ -855,7 +1334,7 @@ class TradingBrainApp {
                     this.voiceSettings.volume = volumeEl ? (volumeEl.value / 100) : this.voiceSettings.volume;
                     this.voiceSettings.language = langEl ? langEl.value : this.voiceSettings.language;
 
-                    try { localStorage.setItem('voiceSettings', JSON.stringify(this.voiceSettings)); } catch (e) {}
+                    try { localStorage.setItem('voiceSettings', JSON.stringify(this.voiceSettings)); } catch (e) { }
                     if (voiceModal) voiceModal.classList.add('hidden');
                     this.speakText('व्हॉइस सेटिंग्ज जतन केली');
                 });
@@ -884,7 +1363,7 @@ class TradingBrainApp {
             if (e.code === 'Space' && e.ctrlKey) {
                 e.preventDefault();
                 if (this.recognition) {
-                    try { this.recognition.start(); } catch (err) {}
+                    try { this.recognition.start(); } catch (err) { }
                     this.speakText('आवाज ऐकण्यासाठी तयार');
                 }
             }
@@ -954,7 +1433,7 @@ class TradingBrainApp {
     toggleTheme() {
         const body = document.body;
         const isDark = body.classList.contains('dark-theme');
-        
+
         if (isDark) {
             body.classList.remove('dark-theme');
             body.classList.add('light-theme');
@@ -962,7 +1441,7 @@ class TradingBrainApp {
             body.classList.remove('light-theme');
             body.classList.add('dark-theme');
         }
-        
+
         localStorage.setItem('theme', isDark ? 'light' : 'dark');
     }
 
@@ -984,7 +1463,7 @@ class TradingBrainApp {
             threshold: 0.1,
             rootMargin: '0px 0px -50px 0px'
         };
-        
+
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 if (entry.isIntersecting) {
@@ -992,7 +1471,7 @@ class TradingBrainApp {
                 }
             });
         }, observerOptions);
-        
+
         document.querySelectorAll('.fade-in').forEach(el => {
             observer.observe(el);
         });
@@ -1006,7 +1485,7 @@ class TradingBrainApp {
             this.updateTradingSignals();
             this.updateMarketIndicators();
         }, 2000);
-        
+
         // Update every 30 seconds
         setInterval(() => {
             this.updateNewsFeed();
@@ -1017,7 +1496,7 @@ class TradingBrainApp {
     updateFusionScore() {
         const oldScore = this.fusionScore;
         this.fusionScore = 0.3 + Math.random() * 0.7;
-        
+
         // Animate score change
         const scoreElement = this.safeGet('fusionScore');
         if (scoreElement) {
@@ -1054,18 +1533,18 @@ class TradingBrainApp {
             { symbol: 'INFY', signal: 'BUY', entry: 1450, target: 1500, stopLoss: 1420, confidence: 82 },
             { symbol: 'ICICI_BANK', signal: 'BUY', entry: 950, target: 1000, stopLoss: 920, confidence: 88 }
         ];
-        
+
         const tableBody = this.safeGet('signalsTable');
         if (!tableBody) return;
         tableBody.innerHTML = '';
-        
+
         signals.forEach(signal => {
             const row = document.createElement('tr');
             row.className = 'border-b border-gray-800 hover:bg-gray-800/50';
-            
-            const signalClass = signal.signal === 'BUY' ? 'signal-buy' : 
-                               signal.signal === 'SELL' ? 'signal-sell' : 'signal-hold';
-            
+
+            const signalClass = signal.signal === 'BUY' ? 'signal-buy' :
+                signal.signal === 'SELL' ? 'signal-sell' : 'signal-hold';
+
             row.innerHTML = `
                 <td class="py-3 px-4 font-semibold">${signal.symbol}</td>
                 <td class="py-3 px-4">
@@ -1083,7 +1562,7 @@ class TradingBrainApp {
                     </div>
                 </td>
             `;
-            
+
             tableBody.appendChild(row);
         });
     }
@@ -1096,7 +1575,7 @@ class TradingBrainApp {
             fiiFlow: 100 + Math.random() * 200,
             diiFlow: -50 + Math.random() * 100
         };
-        
+
         // Store for voice alerts
         this.marketIndicators = indicators;
     }
@@ -1105,11 +1584,11 @@ class TradingBrainApp {
         const newsItems = [
             "रिलायन्स इंडस्ट्रीजचा नेट प्रॉफिट १२% वाढला",
             "TCS ने नवीन शेअर बायबॅक जाहीर केला",
- "HDFC Bank चे Q3 निकाल अपेक्षेप्रमाणे",
+            "HDFC Bank चे Q3 निकाल अपेक्षेप्रमाणे",
             "इन्फोसिसने AI सेवा लाँच केली",
             "बाजारात नवीन उच्च स्तरांवर खरेदी"
         ];
-        
+
         // Randomly update news sentiment
         if (Math.random() > 0.7) {
             this.speakText(newsItems[Math.floor(Math.random() * newsItems.length)]);
@@ -1122,20 +1601,19 @@ class TradingBrainApp {
             bearish: 20 + Math.random() * 15,
             neutral: 10 + Math.random() * 10
         };
-        
+
         this.socialSentiment = sentiment;
     }
 
     // Service Worker for PWA
     initializeServiceWorker() {
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js')
-                .then(registration => {
-                    console.log('SW registered:', registration);
-                })
-                .catch(error => {
-                    console.log('SW registration failed:', error);
-                });
+            navigator.serviceWorker.getRegistrations().then(function (registrations) {
+                for (let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+            console.log('Service Workers unregistered for debugging.');
         }
     }
 
@@ -1156,7 +1634,8 @@ class TradingBrainApp {
         if (installApp) {
             installApp.addEventListener('click', async () => {
                 if (deferredPrompt) {
-                    try { deferredPrompt.prompt();
+                    try {
+                        deferredPrompt.prompt();
                         const result = await deferredPrompt.userChoice;
                         deferredPrompt = null;
                         if (installPromptEl) installPromptEl.classList.add('hidden');
@@ -1200,7 +1679,7 @@ class TradingBrainApp {
         if (savedVoiceSettings) {
             this.voiceSettings = JSON.parse(savedVoiceSettings);
         }
-        
+
         const savedLanguage = localStorage.getItem('tradingBrainLanguage');
         if (savedLanguage) {
             this.currentLanguage = savedLanguage;
@@ -1221,10 +1700,10 @@ class TradingBrainApp {
     // Error Handling
     handleError(error, context = 'Unknown') {
         console.error(`Error in ${context}:`, error);
-        
+
         // Show user-friendly error message
         this.showNotification('त्रुटी', 'काही त्रुटी आली आहे. कृपया पृष्ठ रीफ्रेश करा.');
-        
+
         // Log to analytics or error reporting service
         if (window.gtag) {
             window.gtag('event', 'error', {
@@ -1239,13 +1718,13 @@ class TradingBrainApp {
 document.addEventListener('DOMContentLoaded', () => {
     try {
         window.tradingBrain = new TradingBrainApp();
-        
+
         // Request notification permission
         window.tradingBrain.requestNotificationPermission();
-        
+
         // Load settings
         window.tradingBrain.loadSettings();
-        
+
     } catch (error) {
         console.error('Failed to initialize Trading Brain App:', error);
     }
@@ -1281,7 +1760,7 @@ document.addEventListener('keydown', (e) => {
         const searchInput = document.querySelector('input[type="search"]');
         if (searchInput) searchInput.focus();
     }
-    
+
     // Ctrl + / for voice commands
     if (e.ctrlKey && e.key === '/') {
         e.preventDefault();
@@ -1307,7 +1786,7 @@ document.addEventListener('header-inserted', () => {
             window.tradingBrain.loadSettings();
             // ensure header auto-hide behavior is bound
             if (typeof window.tradingBrain.setupHeaderAutoHide === 'function') {
-                try { window.tradingBrain.setupHeaderAutoHide(); } catch (e) {}
+                try { window.tradingBrain.setupHeaderAutoHide(); } catch (e) { }
             }
         }
     } catch (e) {
