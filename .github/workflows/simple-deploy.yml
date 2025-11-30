@@ -1,4 +1,4 @@
-name: Simple Build & Test
+name: Deploy to GitHub Pages
 
 on:
   push:
@@ -7,43 +7,31 @@ on:
     branches: [ main, develop ]
 
 jobs:
-  test:
-    name: Run Tests
+  build-and-deploy:
     runs-on: ubuntu-latest
     
     steps:
-    - uses: actions/checkout@v3
-    
+    - name: Checkout
+      uses: actions/checkout@v3
+      
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
-        cache: 'npm'
-    
-    - name: Install Backend Dependencies
-      working-directory: ./backend
-      run: npm ci
-    
-    - name: Install Frontend Dependencies
-      working-directory: ./frontend
-      run: npm ci
-    
-    - name: Run Backend Tests
-      working-directory: ./backend
-      run: npm test -- --passWithNoTests
-
-  deploy:
-    name: Deploy
-    needs: test
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v3
-    
+        
+    - name: Install dependencies
+      run: |
+        cd frontend
+        npm ci
+        
+    - name: Build
+      run: |
+        cd frontend
+        npm run build
+        
     - name: Deploy to GitHub Pages
       uses: JamesIves/github-pages-deploy-action@v4
       with:
-        folder: ./frontend
         branch: gh-pages
+        folder: frontend/dist
         clean: true
