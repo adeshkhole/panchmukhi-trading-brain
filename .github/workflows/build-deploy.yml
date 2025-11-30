@@ -75,6 +75,14 @@ jobs:
         cache-from: type=gha
         cache-to: type=gha,mode=max
     
+    - name: Install test dependencies
+      working-directory: ./backend
+      run: npm install --save-dev jest @types/jest
+
+    - name: Run Backend Tests
+      working-directory: ./backend
+      run: npm test -- --passWithNoTests
+    
     - name: Extract metadata - ML Services
       id: meta-ml
       uses: docker/metadata-action@v4
