@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Satellite Intelligence - Panchmukhi Trading</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #1A1A1A;
+            color: #FFFFFF;
+            min-height: 100vh;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+        }
+        .map-container {
+            height: 400px;
+            width: 100%;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .pulse-dot {
+            width: 12px;
+            height: 12px;
+            background-color: #22c55e;
+            border-radius: 50%;
+            position: absolute;
+            animation: pulse 2s infinite;
+            cursor: pointer;
+        }
+        .pulse-dot.red { background-color: #ef4444; }
+        .pulse-dot.blue { background-color: #3b82f6; }
+        .pulse-dot.yellow { background-color: #eab308; }
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+        .satellite-orbit {
+            position: absolute;
+            border: 2px dashed rgba(59, 130, 246, 0.3);
+            border-radius: 50%;
+            animation: rotate 20s linear infinite;
+        }
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div id="site-header"></div>
+    <script src="include-header.js"></script>
+
+    <main class="pt-24 px-6 max-w-7xl mx-auto pb-12">
+        <div class="mb-8">
+            <h1 class="text-4xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-600">
+                ISRO Satellite Economic Intelligence
+            </h1>
+            <p class="text-gray-400">Real-time economic indicators from satellite imagery, AIS data, and weather patterns</p>
+        </div>
+
+        <!-- Top Level Insights -->
+        <div class="grid md:grid-cols-4 gap-4 mb-8">
+            <div class="glass-card p-4 border-l-4 border-blue-500">
+                <h3 class="text-gray-400 text-xs uppercase tracking-wider mb-1">Maritime Index</h3>
+                <div class="text-2xl font-bold text-white mb-1" id="maritimeIndex">Loading...</div>
+                <div class="text-xs text-blue-400" id="maritimeTrend">Analyzing...</div>
+            </div>
+            <div class="glass-card p-4 border-l-4 border-red-500">
+                <h3 class="text-gray-400 text-xs uppercase tracking-wider mb-1">Industrial Output</h3>
+                <div class="text-2xl font-bold text-white mb-1" id="industrialIndex">Loading...</div>
+                <div class="text-xs text-red-400" id="industrialTrend">Scanning...</div>
+            </div>
+            <div class="glass-card p-4 border-l-4 border-green-500">
+                <h3 class="text-gray-400 text-xs uppercase tracking-wider mb-1">Crop Health (NDVI)</h3>
+                <div class="text-2xl font-bold text-white mb-1" id="agriIndex">Loading...</div>
+                <div class="text-xs text-green-400" id="agriTrend">Processing...</div>
+            </div>
+            <div class="glass-card p-4 border-l-4 border-yellow-500">
+                <h3 class="text-gray-400 text-xs uppercase tracking-wider mb-1">Weather Alert</h3>
+                <div class="text-2xl font-bold text-white mb-1" id="weatherStatus">Normal</div>
+                <div class="text-xs text-yellow-400" id="weatherDesc">Monitoring...</div>
+            </div>
+        </div>
+
+        <!-- Satellite Tracking Map -->
+        <div class="glass-card p-6 mb-8">
+            <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                <span class="text-2xl">🛰️</span> Live Satellite Tracking
+            </h2>
+            <div class="map-container" id="satelliteMap">
+                <!-- Populated by JS -->
+            </div>
+            <div class="grid grid-cols-4 gap-3 mt-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    <span class="text-xs text-gray-400">Active Ports</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                    <span class="text-xs text-gray-400">Industrial Zones</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-blue-500"></div>
+                    <span class="text-xs text-gray-400">ISRO Satellites</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                    <span class="text-xs text-gray-400">Weather Events</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Weather & Crop Trends -->
+        <div class="grid lg:grid-cols-2 gap-6 mb-8">
+            <!-- Weather Pattern Chart -->
+            <div class="glass-card p-6">
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span class="text-xl">🌦️</span> Weather Pattern Analysis
+                </h2>
+                <div id="weatherChart" class="h-80 w-full"></div>
+            </div>
+
+            <!-- Crop Health Trend -->
+            <div class="glass-card p-6">
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span class="text-xl">🌾</span> Crop Health Trend (30 Days)
+                </h2>
+                <div id="cropTrendChart" class="h-80 w-full"></div>
+            </div>
+        </div>
+
+        <!-- Port Activity & Industrial Zones -->
+        <div class="grid lg:grid-cols-2 gap-6 mb-8">
+            <!-- Maritime & Ports -->
+            <div class="glass-card p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold flex items-center gap-2">
+                        <span class="text-xl">🚢</span> Port Congestion
+                    </h2>
+                    <span class="px-3 py-1 bg-blue-500/20 text-blue-400 rounded-full text-xs">Live AIS</span>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="text-gray-500 text-xs border-b border-gray-800">
+                                <th class="pb-2">Port</th>
+                                <th class="pb-2">Docked</th>
+                                <th class="pb-2">Waiting</th>
+                                <th class="pb-2">Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="portTableBody" class="text-sm">
+                            <!-- Populated by JS -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="mt-4 p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
+                    <p class="text-sm text-blue-300" id="maritimeAnalysis">Loading...</p>
+                </div>
+            </div>
+
+            <!-- Industrial Heatmap -->
+            <div class="glass-card p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-xl font-bold flex items-center gap-2">
+                        <span class="text-xl">🏭</span> Industrial Activity
+                    </h2>
+                    <span class="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-xs">Thermal</span>
+                </div>
+                <div class="space-y-3" id="industrialList">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="mt-4 p-3 bg-red-500/10 rounded-lg border border-red-500/20">
+                    <p class="text-sm text-red-300" id="industrialAnalysis">Loading...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Agriculture & Disaster Alerts -->
+        <div class="grid lg:grid-cols-3 gap-6">
+            <!-- Crop Health Grid -->
+            <div class="glass-card p-6 lg:col-span-2">
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span class="text-xl">🌾</span> Regional Crop Health (NDVI)
+                </h2>
+                <div class="grid md:grid-cols-3 gap-4" id="agriGrid">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="mt-4 p-3 bg-green-500/10 rounded-lg border border-green-500/20">
+                    <p class="text-sm text-green-300" id="agriAnalysis">Loading...</p>
+                </div>
+            </div>
+
+            <!-- Natural Disaster Alerts -->
+            <div class="glass-card p-6">
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
+                    <span class="text-xl">⚠️</span> Disaster Alerts
+                </h2>
+                <div class="space-y-3" id="alertsList">
+                    <!-- Populated by JS -->
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="isro.js"></script>
+</body>
+</html>

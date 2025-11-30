@@ -319,3 +319,26 @@ jobs:
         name: quality-report
         path: quality-report.md
         retention-days: 30
+
+  notify:
+    name: Notify Channel on Push to MAIN
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Send notification
+      run: |
+        curl -X POST -H 'Content-type: application/json' --data '{"text":"@channel 🚨 Push to MAIN by adeshkhole"}' $SLACK_WEBHOOK_URL
+
+permissions:
+  id-token: write
+  contents: read
+  pull-requests: write
+  issues: write
+  pages: write
+  deployments: write
+  checks: write
+  statuses: write
+  repository-projects: write
+  actions: write
+  

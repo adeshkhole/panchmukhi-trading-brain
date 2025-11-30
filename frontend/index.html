@@ -11,7 +11,50 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/tradingview/1.0.0/charting_library.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+    <script src="/js/header.js"></script>
+    <script src="/js/auth.js" type="module"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Marathi:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* Animation keyframes */
+        @keyframes satelliteOrbit {
+            0% { transform: rotate(0deg) translateX(50px) rotate(0deg); }
+            100% { transform: rotate(360deg) translateX(50px) rotate(-360deg); }
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(2deg); }
+        }
+        @keyframes fadeInOut {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+        @keyframes webPulse {
+            0% { width: 0; opacity: 0; }
+            50% { width: 100%; opacity: 0.5; }
+            100% { width: 0; opacity: 0; }
+        }
+        @keyframes newsTicker {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* Animation classes */
+        .satellite {
+            animation: satelliteOrbit 20s linear infinite;
+        }
+        .social-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        .greek-symbol {
+            animation: fadeInOut 8s infinite alternate;
+        }
+        .connection-line {
+            animation: webPulse 4s infinite;
+        }
+        .news-ticker {
+            animation: newsTicker 30s linear infinite;
+        }
+    </style>
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#FF6B35">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -84,6 +127,10 @@
         .data-card {
             transition: all 0.3s ease;
             cursor: pointer;
+            min-height: 220px; /* Fix for stability */
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
         
         .data-card:hover {
@@ -94,10 +141,30 @@
         .pulse-animation {
             animation: pulse 2s infinite;
         }
+
+        .fusion-glow {
+            animation: fusion-pulse 3s infinite;
+            filter: drop-shadow(0 0 15px rgba(255, 107, 53, 0.6));
+        }
         
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
+        }
+
+        @keyframes fusion-pulse {
+            0% { filter: drop-shadow(0 0 10px rgba(255, 107, 53, 0.4)); transform: scale(1); }
+            50% { filter: drop-shadow(0 0 25px rgba(255, 107, 53, 0.8)); transform: scale(1.02); }
+            100% { filter: drop-shadow(0 0 10px rgba(255, 107, 53, 0.4)); transform: scale(1); }
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            20%, 100% { transform: translateX(100%) rotate(45deg); }
+        }
+        
+        .animate-shine {
+            animation: shine 6s infinite ease-in-out;
         }
         
         .typing-cursor {
@@ -199,12 +266,7 @@
             overflow: hidden;
         }
         
-        .language-selector {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-        }
+        /* Language selector positioning removed to match shared header */
         
         .notification-badge {
             position: absolute;
@@ -298,6 +360,30 @@
     <!-- Market Dashboard -->
     <section id="dashboard" class="py-20 px-6">
         <div class="max-w-7xl mx-auto">
+            <!-- Live Market Ticker -->
+            <div class="glass-card p-4 mb-8 overflow-hidden">
+                <div class="flex items-center">
+                    <span class="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded mr-3">LIVE</span>
+                    <div class="ticker-container flex-1 overflow-hidden">
+                        <div class="ticker-track flex items-center whitespace-nowrap">
+                            <!-- Ticker items will be populated by JavaScript -->
+                            <div class="ticker-item px-4 py-2 border-r border-gray-700">
+                                <span class="font-bold">NIFTY 50</span> <span class="text-green-400">↑ 19,845.65</span> <span class="text-green-400 text-sm">+1.25%</span>
+                            </div>
+                            <div class="ticker-item px-4 py-2 border-r border-gray-700">
+                                <span class="font-bold">SENSEX</span> <span class="text-red-400">↓ 65,432.10</span> <span class="text-red-400 text-sm">-0.85%</span>
+                            </div>
+                            <div class="ticker-item px-4 py-2 border-r border-gray-700">
+                                <span class="font-bold">RELIANCE</span> <span class="text-green-400">↑ ₹2,345.60</span> <span class="text-green-400 text-sm">+2.1%</span>
+                            </div>
+                            <div class="ticker-item px-4 py-2">
+                                <span class="font-bold">USD/INR</span> <span class="text-gray-300">₹83.24</span> <span class="text-green-400 text-sm">+0.12%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="text-center mb-12 fade-in">
                 <h2 class="text-4xl md:text-5xl font-bold mb-6 gradient-text marathi-text">
                     <span data-lang-key="live-dashboard">Live Dashboard</span>
@@ -309,27 +395,302 @@
 
             <!-- Fusion Score -->
             <div class="mb-12 fade-in">
-                <div class="glass-card p-8 text-center">
-                    <h3 class="text-2xl font-bold mb-4 marathi-text flex items-center justify-center">
-                        <img src="resources/dashboard.svg" alt="dash" class="w-8 h-8 mr-3"/>
-                        <span data-lang-key="fusion-score">Fusion Score</span>
-                    </h3>
-                    <div class="flex items-center justify-center mb-6">
-                        <div class="relative w-32 h-32">
-                            <svg class="w-32 h-32 transform -rotate-90">
-                                <circle cx="64" cy="64" r="56" stroke="rgba(255,255,255,0.1)" stroke-width="8" fill="none"/>
-                                <circle id="fusionCircle" cx="64" cy="64" r="56" stroke="#FF6B35" stroke-width="8" fill="none" 
-                                        stroke-dasharray="351.86" stroke-dashoffset="175.93" stroke-linecap="round"/>
+                <div class="glass-card p-8 text-center relative overflow-hidden group">
+                    <!-- Animated Background Layer -->
+                    <div class="absolute inset-0 bg-gradient-to-br from-orange-500/10 via-purple-500/10 to-blue-500/10 opacity-50 group-hover:opacity-70 transition-opacity duration-500"></div>
+                    <div class="absolute -inset-[100%] bg-gradient-to-r from-transparent via-white/5 to-transparent rotate-45 translate-x-[-100%] animate-shine"></div>
+                    
+                    <div class="relative z-10 py-8"> <!-- Content Wrapper -->
+                        <h3 class="text-2xl font-bold mb-8 marathi-text flex items-center justify-center">
+                            <img src="resources/dashboard.svg" alt="dash" class="w-8 h-8 mr-3"/>
+                            <span data-lang-key="fusion-score">Fusion Score</span>
+                        </h3>
+
+
+                        <!-- Radial Data Fusion Visualization -->
+                        <div class="w-full flex justify-center items-center mb-8 px-4">
+                            <div class="relative flex items-center justify-center" style="width: 450px; height: 450px;">
+                            
+                            <!-- Connecting Lines with Animated Particles (SVG) -->
+                            <svg class="absolute inset-0 w-full h-full pointer-events-none" viewBox="0 0 450 450">
+                                <defs>
+                                    <!-- Animated particle -->
+                                    <circle id="particle" r="4" fill="#FF6B35" opacity="0.9">
+                                        <animate attributeName="opacity" values="0.3;0.9;0.3" dur="1.5s" repeatCount="indefinite"/>
+                                    </circle>
+                                </defs>
+                                
+                                <!-- Animated Particles Only (No Lines) -->
+                                
+                                <!-- Particle 1: ISRO (Top) - (225, 60) to center (225, 225) -->
+                                <use href="#particle" x="225" y="60">
+                                    <animateMotion path="M0,0 L0,90" dur="2s" repeatCount="indefinite"/>
+                                </use>
+                                
+                                <!-- Particle 2: News (Right-Top) - (382, 142) to center -->
+                                <use href="#particle" x="382" y="142">
+                                    <animateMotion path="M0,0 L-107,58" dur="2s" begin="0.4s" repeatCount="indefinite"/>
+                                </use>
+                                
+                                <!-- Particle 3: Options (Right-Bottom) - (322, 358) to center -->
+                                <use href="#particle" x="322" y="358">
+                                    <animateMotion path="M0,0 L-72,-108" dur="2s" begin="0.8s" repeatCount="indefinite"/>
+                                </use>
+                                
+                                <!-- Particle 4: Web (Left-Bottom) - (128, 358) to center -->
+                                <use href="#particle" x="128" y="358">
+                                    <animateMotion path="M0,0 L72,-108" dur="2s" begin="1.2s" repeatCount="indefinite"/>
+                                </use>
+                                
+                                <!-- Particle 5: Social (Left-Top) - (68, 142) to center -->
+                                <use href="#particle" x="68" y="142">
+                                    <animateMotion path="M0,0 L107,58" dur="2s" begin="1.6s" repeatCount="indefinite"/>
+                                </use>
                             </svg>
+
+                            <!-- Central AI Score (Geometric Center) -->
+                            <div class="absolute flex flex-col items-center justify-center bg-gray-900/90 rounded-full backdrop-blur-xl border-2 border-orange-500/30 shadow-[0_0_50px_rgba(255,107,53,0.5)] fusion-glow z-30" style="width: 192px; height: 192px; top: calc(50% - 96px); left: calc(50% - 96px);">
+                                <svg class="absolute inset-0 w-full h-full transform -rotate-90">
+                                    <circle cx="96" cy="96" r="84" stroke="rgba(255,255,255,0.1)" stroke-width="6" fill="none"/>
+                                    <circle id="fusionCircle" cx="96" cy="96" r="84" stroke="#FF6B35" stroke-width="8" fill="none" 
+                                            stroke-dasharray="528" stroke-dashoffset="264" stroke-linecap="round">
+                                        <animate attributeName="stroke-dashoffset" values="528;132;528" dur="3s" repeatCount="indefinite"/>
+                                    </circle>
+                                </svg>
+                                <span id="fusionScore" class="text-6xl font-bold text-white relative z-10">0.80</span>
+                                <span class="text-xs text-gray-400 mt-2 relative z-10 uppercase tracking-wider">AI SCORE</span>
+                            </div>
+
+                            <!-- 5 Data Source Nodes (Perfect Circle: Radius 165px, Equal 72° Spacing) -->
+                            
+                            <!-- 1. ISRO (Top: -90°) - Position: (225, 60) -->
+                            <div class="absolute z-20" style="top: 60px; left: 225px; transform: translate(-50%, -50%);">
+                                <div class="flex flex-col items-center group cursor-pointer">
+                                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500/30 to-blue-600/10 border-2 border-blue-400/60 flex items-center justify-center mb-2 shadow-[0_0_25px_rgba(59,130,246,0.6)] group-hover:scale-110 transition-all duration-300 backdrop-blur-sm">
+                                        <img src="resources/satellite-data.svg" class="w-8 h-8" alt="ISRO">
+                                    </div>
+                                    <span class="text-xs text-blue-300 font-bold bg-blue-900/70 px-3 py-1 rounded-full backdrop-blur-sm border border-blue-500/40">ISRO</span>
+                                </div>
+                            </div>
+
+                            <!-- 2. News (Right-Top: -18°) - Position: (382, 142) -->
+                            <div class="absolute z-20" style="top: 142px; left: 382px; transform: translate(-50%, -50%);">
+                                <div class="flex flex-col items-center group cursor-pointer">
+                                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-green-500/30 to-green-600/10 border-2 border-green-400/60 flex items-center justify-center mb-2 shadow-[0_0_25px_rgba(34,197,94,0.6)] group-hover:scale-110 transition-all duration-300 backdrop-blur-sm">
+                                        <span class="text-2xl">📰</span>
+                                    </div>
+                                    <span class="text-xs text-green-300 font-bold bg-green-900/70 px-3 py-1 rounded-full backdrop-blur-sm border border-green-500/40">News</span>
+                                </div>
+                            </div>
+
+                            <!-- 3. Options (Right-Bottom: 54°) - Position: (322, 358) -->
+                            <div class="absolute z-20" style="top: 358px; left: 322px; transform: translate(-50%, -50%);">
+                                <div class="flex flex-col items-center group cursor-pointer">
+                                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500/30 to-purple-600/10 border-2 border-purple-400/60 flex items-center justify-center mb-2 shadow-[0_0_25px_rgba(168,85,247,0.6)] group-hover:scale-110 transition-all duration-300 backdrop-blur-sm">
+                                        <span class="text-2xl">📊</span>
+                                    </div>
+                                    <span class="text-xs text-purple-300 font-bold bg-purple-900/70 px-3 py-1 rounded-full backdrop-blur-sm border border-purple-500/40">Options</span>
+                                </div>
+                            </div>
+
+                            <!-- 4. Web (Left-Bottom: 126°) - Position: (128, 358) -->
+                            <div class="absolute z-20" style="top: 358px; left: 128px; transform: translate(-50%, -50%);">
+                                <div class="flex flex-col items-center group cursor-pointer">
+                                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-orange-500/30 to-orange-600/10 border-2 border-orange-400/60 flex items-center justify-center mb-2 shadow-[0_0_25px_rgba(249,115,22,0.6)] group-hover:scale-110 transition-all duration-300 backdrop-blur-sm">
+                                        <span class="text-2xl">🌐</span>
+                                    </div>
+                                    <span class="text-xs text-orange-300 font-bold bg-orange-900/70 px-3 py-1 rounded-full backdrop-blur-sm border border-orange-500/40">Web</span>
+                                </div>
+                            </div>
+
+                            <!-- 5. Social (Left-Top: 198°) - Position: (68, 142) -->
+                            <div class="absolute z-20" style="top: 142px; left: 68px; transform: translate(-50%, -50%);">
+                                <div class="flex flex-col items-center group cursor-pointer">
+                                    <div class="w-16 h-16 rounded-full bg-gradient-to-br from-pink-500/30 to-pink-600/10 border-2 border-pink-400/60 flex items-center justify-center mb-2 shadow-[0_0_25px_rgba(236,72,153,0.6)] group-hover:scale-110 transition-all duration-300 backdrop-blur-sm">
+                                        <span class="text-2xl">📱</span>
+                                    </div>
+                                    <span class="text-xs text-pink-300 font-bold bg-pink-900/70 px-3 py-1 rounded-full backdrop-blur-sm border border-pink-500/40">Social</span>
+                                </div>
+                            </div>
+                        </div>
+                        </div> <!-- Close flex wrapper -->
+
+
+                        <!-- Metrics Row -->
+                        <div class="flex items-center justify-center space-x-8 mb-4 relative z-20">
+                        <div class="text-center">
+                            <div class="text-xs text-gray-400 mb-1">Signal</div>
+                            <span id="fusionSignal" class="text-2xl font-bold signal-buy">BUY</span>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xs text-gray-400 mb-1">Confidence</div>
+                            <span id="fusionConfidence" class="text-xl font-bold text-white">85%</span>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-xs text-gray-400 mb-1">Key Driver</div>
+                            <span class="text-xl font-bold text-blue-400">ISRO</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Sparkline for Historical Trend -->
+                    <div class="max-w-xs mx-auto mt-4">
+                        <div class="flex justify-between text-xs text-gray-500 mb-1">
+                            <span>1H Trend</span>
+                            <span class="text-green-400">+2.4%</span>
+                        </div>
+                        <div class="h-8 w-full bg-gray-800/50 rounded-lg overflow-hidden relative">
+                            <svg class="w-full h-full" preserveAspectRatio="none">
+                                <polyline points="0,32 10,28 20,30 30,25 40,22 50,26 60,20 70,15 80,18 90,10 100,5" 
+                                          fill="none" stroke="#22C55E" stroke-width="2" vector-effect="non-scaling-stroke"/>
+                            </svg>
+                        </div>
+                    </div>
+                    </div> <!-- End Content Wrapper -->
+                </div>
+            </div>
+
+            <!-- Quick Stats Dashboard -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="glass-card p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-gray-400 text-sm">Market Cap (Cr)</span>
+                        <span class="text-green-400">↑ 2.4%</span>
+                    </div>
+                    <div class="text-2xl font-bold">₹3,42,56,789</div>
+                    <div class="h-1 bg-gradient-to-r from-green-500 to-blue-500 mt-2 rounded-full"></div>
+                </div>
+                <div class="glass-card p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-gray-400 text-sm">Advance/Decline</span>
+                        <span class="text-green-400">1,234/876</span>
+                    </div>
+                    <div class="text-2xl font-bold">1,410</div>
+                    <div class="h-1 bg-gradient-to-r from-green-500 to-blue-500 mt-2 rounded-full"></div>
+                </div>
+                <div class="glass-card p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-gray-400 text-sm">VIX</span>
+                        <span class="text-red-400">↑ 12.8%</span>
+                    </div>
+                    <div class="text-2xl font-bold">15.65</div>
+                    <div class="h-1 bg-gradient-to-r from-red-500 to-yellow-500 mt-2 rounded-full"></div>
+                </div>
+                <div class="glass-card p-6">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-gray-400 text-sm">FII/DII Activity</span>
+                        <span class="text-green-400">+₹1,234 Cr</span>
+                    </div>
+                    <div class="text-2xl font-bold">+₹2,345 Cr</div>
+                    <div class="h-1 bg-gradient-to-r from-green-500 to-blue-500 mt-2 rounded-full"></div>
+                </div>
+            </div>
+
+            <!-- Market Sentiment & Top Movers Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                <!-- Market Sentiment -->
+                <div class="glass-card p-6">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        Market Sentiment
+                    </h3>
+                    <div class="flex items-center justify-center h-40 mb-4">
+                        <div class="relative w-32 h-32">
+                            <div class="absolute inset-0 rounded-full border-8 border-gray-700"></div>
+                            <div class="absolute inset-0 rounded-full border-8 border-green-500 border-t-transparent border-r-transparent" style="transform: rotate(45deg);"></div>
                             <div class="absolute inset-0 flex items-center justify-center">
-                                <span id="fusionScore" class="text-3xl font-bold">0.75</span>
+                                <span class="text-3xl font-bold">72</span>
+                                <span class="text-sm text-gray-400 ml-1">/100</span>
                             </div>
                         </div>
                     </div>
-                    <div class="flex items-center justify-center space-x-4">
-                        <span id="fusionSignal" class="text-2xl font-bold signal-buy">BUY</span>
-                        <span class="text-gray-300">•</span>
-                        <span id="fusionConfidence" class="text-gray-300">Confidence: 85%</span>
+                    <div class="text-center">
+                        <div class="font-medium sentiment-text text-green-400">Bullish</div>
+                        <div class="text-sm text-gray-400 mt-1 sentiment-desc">Market is showing strong positive momentum</div>
+                    </div>
+                </div>
+
+                <!-- Top Gainers -->
+                <div class="glass-card p-6">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h7m0 10v-3m-7 3h7m-7-4h7m-11-4l-4 4m0 0l-4-4m4 4V3"></path>
+                        </svg>
+                        Top Gainers
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">RELIANCE</span>
+                            <span class="text-green-400">+4.5%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">TATASTEEL</span>
+                            <span class="text-green-400">+3.8%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">HDFCBANK</span>
+                            <span class="text-green-400">+2.9%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Top Losers -->
+                <div class="glass-card p-6">
+                    <h3 class="text-xl font-bold mb-4 flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 17h7m0 0V9m0 8l-4-4m4 4l4-4M4 17h7m0 0V9m0 8l-4-4m4 4l4-4"></path>
+                        </svg>
+                        Top Losers
+                    </h3>
+                    <div class="space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">INFY</span>
+                            <span class="text-red-400">-2.1%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">ICICIBANK</span>
+                            <span class="text-red-400">-1.8%</span>
+                        </div>
+                        <div class="flex justify-between items-center">
+                            <span class="font-medium">BHARTIARTL</span>
+                            <span class="text-red-400">-1.5%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Alerts -->
+            <div class="glass-card p-6 mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold flex items-center">
+                        <svg class="w-5 h-5 mr-2 text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                        </svg>
+                        Recent Alerts
+                    </h3>
+                    <a href="#" class="text-sm text-blue-400 hover:underline">View All</a>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex items-start p-3 bg-gray-800/50 rounded-lg">
+                        <div class="flex-shrink-0 w-2 h-2 bg-green-500 rounded-full mt-2 mr-3"></div>
+                        <div class="flex-1">
+                            <div class="flex justify-between">
+                                <span class="font-medium">RELIANCE</span>
+                                <span class="text-xs text-gray-400">2 min ago</span>
+                            </div>
+                            <p class="text-sm text-gray-300">Price crossed above 200-day moving average</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start p-3 bg-gray-800/50 rounded-lg">
+                        <div class="flex-shrink-0 w-2 h-2 bg-red-500 rounded-full mt-2 mr-3"></div>
+                        <div class="flex-1">
+                            <div class="flex justify-between">
+                                <span class="font-medium">NIFTY 50</span>
+                                <span class="text-xs text-gray-400">15 min ago</span>
+                            </div>
+                            <p class="text-sm text-gray-300">Market volatility increased by 12%</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -337,7 +698,7 @@
             <!-- Data Sources Grid -->
             <div class="market-grid mb-12 fade-in">
                 <!-- ISRO Satellite Data -->
-                <div class="data-card glass-card p-6">
+                <div id="isro-section" class="data-card glass-card p-6 relative overflow-hidden" style="min-height: 300px;">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center space-x-3">
                             <img src="resources/satellite-data.svg" alt="satellite" class="w-12 h-12 rounded-lg object-cover" />
@@ -446,7 +807,7 @@
                 </div>
 
                 <!-- Web Scraping Data -->
-                <div class="data-card glass-card p-6">
+                <div id="web-section" class="data-card glass-card p-6 relative overflow-hidden" style="min-height: 300px;">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center space-x-3">
                             <div class="w-12 h-12 bg-orange-500 rounded-lg flex items-center justify-center">
@@ -626,8 +987,6 @@
         </div>
     </section>
 
-    <!-- Features Section -->
-    <section class="py-20 px-6 bg-gradient-to-r from-gray-900 to-gray-800">
         <div class="max-w-7xl mx-auto">
             <div class="text-center mb-12 fade-in">
                 <h2 class="text-4xl md:text-5xl font-bold mb-6 gradient-text marathi-text">
@@ -813,6 +1172,125 @@
         </div>
     </div>
 
-    <script src="main.js"></script>
+    <script>
+        /**
+         * Panchmukhi Trading Brain Pro - API Client
+         * Handles all REST API communication with the backend
+         */
+        const API_BASE_URL = 'http://localhost:8083/api';
+        console.log('ApiClient: Initializing inline...');
+
+        class ApiClient {
+            constructor() {
+                this.baseUrl = API_BASE_URL;
+                console.log('ApiClient: Constructor called');
+            }
+
+            async call(method, endpoint, data = null) {
+                const url = `${this.baseUrl}${endpoint}`;
+                const options = {
+                    method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                if (data) options.body = JSON.stringify(data);
+
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.message || `API call failed: ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.error(`API Error (${method} ${endpoint}):`, error);
+                    throw error;
+                }
+            }
+
+            async getMarketSymbols() { return this.call('GET', '/market/symbols'); }
+            async getMarketData(symbol) { return this.call('GET', `/market/data/${symbol}`); }
+            async getFusionScore(symbol) { return this.call('GET', `/market/fusion/${symbol}`); }
+            async getMarketHeatmap() { return this.call('GET', '/market/heatmap'); }
+            async getNews(params = {}) { return this.call('GET', `/news?${new URLSearchParams(params)}`); }
+            async getAlerts(params = {}) { return this.call('GET', `/alerts?${new URLSearchParams(params)}`); }
+            async createAlert(data) { return this.call('POST', '/alerts', data); }
+            async getIPOs(status = 'all') { return this.call('GET', `/ipo?status=${status}`); }
+            async getSectors() { return this.call('GET', '/sectors'); }
+            async getUser(id) { return this.call('GET', `/users/${id}`); }
+            async createUser(data) { return this.call('POST', '/users', data); }
+        }
+
+        window.apiClient = new ApiClient();
+    </script>
+    <script>
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', () => {
+            // ISRO Satellites
+            const isroSection = document.getElementById('isro-section');
+            if (isroSection) {
+                for (let i = 0; i < 3; i++) {
+                    const satellite = document.createElement('div');
+                    satellite.className = 'absolute w-5 h-5 bg-blue-400 rounded-full opacity-70 satellite';
+                    satellite.style.top = `${20 + Math.random() * 60}%`;
+                    satellite.style.left = `${20 + Math.random() * 60}%`;
+                    satellite.style.animationDuration = `${15 + Math.random() * 10 + 10}s`;
+                    isroSection.appendChild(satellite);
+                }
+            }
+
+            // News Ticker
+            const newsSection = document.getElementById('news-section');
+            if (newsSection) {
+                const ticker = document.createElement('div');
+                ticker.className = 'absolute whitespace-nowrap text-sm opacity-70 news-ticker';
+                ticker.textContent = '• Breaking: Market Update • New AI Model Released • Trading Signals Updated • ';
+                ticker.style.top = '10%';
+                newsSection.appendChild(ticker);
+            }
+
+            // Social Icons
+            const socialSection = document.getElementById('social-section');
+            if (socialSection) {
+                const socialIcons = ['🐦', '💬', '📱', '📸', '🔗'];
+                socialIcons.forEach((icon, i) => {
+                    const social = document.createElement('div');
+                    social.className = 'absolute text-2xl opacity-70 social-float';
+                    social.textContent = icon;
+                    social.style.left = `${10 + Math.random() * 80}%`;
+                    social.style.top = `${10 + Math.random() * 80}%`;
+                    social.style.animationDelay = `${i * 2}s`;
+                    socialSection.appendChild(social);
+                });
+            }
+
+            // Options Greek Symbols
+            const optionsSection = document.getElementById('options-section');
+            if (optionsSection) {
+                const symbols = ['Δ', 'Γ', 'Θ', 'Λ', 'Ρ', 'Σ', 'Ω'];
+                symbols.forEach((symbol, i) => {
+                    const el = document.createElement('div');
+                    el.className = 'absolute text-2xl opacity-70 greek-symbol';
+                    el.textContent = symbol;
+                    el.style.left = `${10 + Math.random() * 80}%`;
+                    el.style.top = `${10 + Math.random() * 80}%`;
+                    optionsSection.appendChild(el);
+                });
+            }
+
+            // Web Connections
+            const webSection = document.getElementById('web-section');
+            if (webSection) {
+                for (let i = 0; i < 5; i++) {
+                    const line = document.createElement('div');
+                    line.className = 'absolute h-px bg-gradient-to-r from-transparent via-orange-500/50 to-transparent connection-line';
+                    line.style.top = `${Math.random() * 100}%`;
+                    line.style.left = `${Math.random() * 100}%`;
+                    line.style.animationDelay = `${i * 0.5}s`;
+                    webSection.appendChild(line);
+                }
+            }
+        });
+    </script>
+    <script src="main.js?v=2"></script>
 </body>
 </html>

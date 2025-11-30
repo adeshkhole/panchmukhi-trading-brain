@@ -20,6 +20,7 @@
             --purple: #8B5CF6;
             --pink: #EC4899;
         }
+
         
         body {
             font-family: 'Inter', sans-serif;
@@ -137,9 +138,7 @@
             color: #FFFFFF;
             background: rgba(255,255,255,0.04);
         }
-        /* Header control sizing for consistent look */
-        .nav-controls .glass-card { display:flex; align-items:center; min-height:40px; padding-left:12px; padding-right:12px; font-size:0.95rem; }
-        .language-selector select { min-height:40px; }
+        /* Header control sizing removed to match index.html */
         
         .gradient-text {
             background: linear-gradient(135deg, var(--primary), var(--warning));
@@ -210,53 +209,7 @@
     <div id="site-header"></div>
     <script src="include-header.js"></script>
     <!-- Navigation (will be replaced by shared header) -->
-    <nav class="nav-blur fixed top-0 left-0 right-0 z-50 px-6 py-4">
-        <div class="max-w-7xl mx-auto flex items-center justify-between">
-            <div class="flex items-center space-x-4">
-                <a href="index.html" class="flex items-center space-x-4">
-                    <img src="resources/logo.svg" alt="पं" class="w-10 h-10 rounded-lg object-cover" />
-                    <div>
-                        <h1 class="text-xl font-bold marathi-text">Panchmukhi Trading Brain Pro</h1>
-                        <p class="text-sm text-gray-400">IPO Analysis and Information</p>
-                    </div>
-                </a>
-            </div>
-            
-            <div class="hidden md:flex items-center space-x-6">
-                <a href="index.html" class="nav-link hover:text-orange-400 transition-colors" data-lang-key="dashboard">Dashboard</a>
-                <a href="sectors.html" class="nav-link hover:text-orange-400 transition-colors" data-lang-key="sectors">Sector Analysis</a>
-                <a href="ipo.html" class="nav-link text-orange-400" data-lang-key="ipo">IPO Analysis</a>
-                <a href="admin.html" class="nav-link hover:text-orange-400 transition-colors" data-lang-key="admin">Admin Panel</a>
-            </div>
-            
-            <div class="flex items-center space-x-4 nav-controls">
-                <select id="filterSelect" class="glass-card px-3 py-2 rounded-lg text-sm">
-                    <option value="all">All IPOs</option>
-                    <option value="open">Open IPOs</option>
-                    <option value="closed">Closed IPOs</option>
-                    <option value="upcoming">Upcoming IPOs</option>
-                </select>
-
-                <button id="voiceToggle" class="glass-card px-4 py-2 rounded-lg hover:bg-orange-500/20 transition-colors flex items-center">
-                    <img src="resources/voice-alert.svg" alt="voice" class="w-5 h-5 mr-2"/> <span data-lang-key="voice">Voice Alerts</span>
-                </button>
-                <button id="themeToggle" class="glass-card px-4 py-2 rounded-lg hover:bg-orange-500/20 transition-colors flex items-center">
-                    <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    <span data-lang-key="theme">Theme</span>
-                </button>
-
-                <div class="language-selector">
-                    <select id="languageSelect" class="glass-card px-3 py-2 text-sm rounded-lg">
-                        <option value="mr">Marathi</option>
-                        <option value="hi">Hindi</option>
-                        <option value="en">English</option>
-                        <option value="gu">Gujarati</option>
-                        <option value="kn">Kannada</option>
-                    </select>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <!-- Navigation is handled by include-header.js -->
 
     <!-- Hero Section -->
     <section class="pt-24 pb-12 px-6">
@@ -306,9 +259,17 @@
     <!-- Active IPOs -->
     <section class="py-12 px-6">
         <div class="max-w-7xl mx-auto">
-            <h2 class="text-3xl font-bold mb-8 marathi-text text-center fade-in">
-                Active IPOs
-            </h2>
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-3xl font-bold marathi-text fade-in">
+                    IPO Listings
+                </h2>
+                <select id="filterSelect" class="glass-card px-4 py-2 rounded-lg text-white">
+                    <option value="all">All IPOs</option>
+                    <option value="open">Open Now</option>
+                    <option value="upcoming">Upcoming</option>
+                    <option value="closed">Recently Closed</option>
+                </select>
+            </div>
             
             <div class="ipo-grid fade-in">
                 <!-- IPO Card 1 -->
@@ -736,12 +697,63 @@
             </div>
             
             <div id="modalContent" class="space-y-6">
+
                 <!-- Dynamic content will be loaded here -->
             </div>
         </div>
     </div>
 
     <script src="ipo.js"></script>
+    <script>
+        /**
+         * Panchmukhi Trading Brain Pro - API Client
+         * Handles all REST API communication with the backend
+         */
+        const API_BASE_URL = 'http://localhost:8083/api';
+        console.log('ApiClient: Initializing inline...');
+
+        class ApiClient {
+            constructor() {
+                this.baseUrl = API_BASE_URL;
+                console.log('ApiClient: Constructor called');
+            }
+
+            async call(method, endpoint, data = null) {
+                const url = `${this.baseUrl}${endpoint}`;
+                const options = {
+                    method,
+                    headers: { 'Content-Type': 'application/json' }
+                };
+                if (data) options.body = JSON.stringify(data);
+
+                try {
+                    const response = await fetch(url, options);
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({}));
+                        throw new Error(errorData.message || `API call failed: ${response.status}`);
+                    }
+                    return await response.json();
+                } catch (error) {
+                    console.error(`API Error (${method} ${endpoint}):`, error);
+                    throw error;
+                }
+            }
+
+            async getMarketSymbols() { return this.call('GET', '/market/symbols'); }
+            async getMarketData(symbol) { return this.call('GET', `/market/data/${symbol}`); }
+            async getFusionScore(symbol) { return this.call('GET', `/market/fusion/${symbol}`); }
+            async getMarketHeatmap() { return this.call('GET', '/market/heatmap'); }
+            async getNews(params = {}) { return this.call('GET', `/news?${new URLSearchParams(params)}`); }
+            async getAlerts(params = {}) { return this.call('GET', `/alerts?${new URLSearchParams(params)}`); }
+            async createAlert(data) { return this.call('POST', '/alerts', data); }
+            async getIPOs(status = 'all') { return this.call('GET', `/ipo?status=${status}`); }
+            async getSectors() { return this.call('GET', '/sectors'); }
+            async getUser(id) { return this.call('GET', `/users/${id}`); }
+            async createUser(data) { return this.call('POST', '/users', data); }
+        }
+
+        window.apiClient = new ApiClient();
+    </script>
     <script src="main.js"></script>
 </body>
 </html>
